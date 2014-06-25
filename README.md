@@ -17,8 +17,11 @@ SWTKnob currently supports a scale for every primitive Java data type:
 * KnobScale.Integer(0, 100);
 * KnobScale.Character(0, 100);
 
-A knob's value can be changed and retrieved via getters and setters, and a SelectionListener
-can be attached. A knob's sensitivity can be changed via Knob.setSensitivity().
+When instantiated with a scale for Integers, Longs or Chars and when the range between
+the defined minimum and maximum is small enough, the knob will display ticks reflecting the
+scale and the indicator will snap to these ticks. A knob's value can be changed and retrieved 
+via getters and setters, and a SelectionListener can be attached. A knob's sensitivity can be 
+adjusted by calling Knob.setSensitivity(). The default value is 200.
 
 Example
 ------
