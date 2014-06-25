@@ -1,7 +1,7 @@
 SWTKnob
 ====
 
-This project provides a Knob widget for the Standard Widget Toolkit (SWT).
+This project implements a Knob widget for the Standard Widget Toolkit (SWT).
 
 A knob provides functionalities similar to a SWT Slider or a SWT Scale while occupying much less
 screen space.
