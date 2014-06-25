@@ -55,36 +55,36 @@ import org.eclipse.swt.widgets.Event;
 public class Knob<T> extends Canvas {
 
     /** Design */
-    private static final int SCALE_LOWER_BOUND = 20;
+    private static final int        SCALE_LOWER_BOUND = 20;
     /** Design */
-    private final Color      black;
+    private final Color             black;
     /** Design */
-    private final Color      darkGray;
+    private final Color             darkGray;
     /** Design */
-    private final Color      lightGray;
+    private final Color             lightGray;
     /** Design */
-    private final Color      white;
+    private final Color             white;
     /** Design */
-    private final Color      red;
+    private final Color             red;
 
     /** Dragging */
-    private boolean          drag              = false;
+    private boolean                 drag              = false;
     /** Dragging */
-    private int              dragY             = 0;
+    private int                     dragY             = 0;
     /** Dragging */
-    private int              dragOffset        = 0;
+    private int                     dragOffset        = 0;
     /** Dragging */
-    private int              screenX           = 0;
+    private int                     screenX           = 0;
     /** Dragging */
-    private int              screenY           = 0;
+    private int                     screenY           = 0;
     /** Dragging */
-    private double           dragValue         = 0;
+    private double                  dragValue         = 0;
     /** Dragging */
-    private final Cursor     defaultCursor     = getDefaultCursor();
+    private final Cursor            defaultCursor     = getDefaultCursor();
     /** Dragging */
-    private final Cursor     hiddenCursor      = getHiddenCursor();
+    private final Cursor            hiddenCursor      = getHiddenCursor();
     /** Dragging */
-    private double           sensitivity       = 200d;
+    private double                  sensitivity       = 200d;
 
     /** Value in [0, 1] */
     private double                  value             = 0d;
@@ -92,12 +92,12 @@ public class Knob<T> extends Canvas {
     /** Scale */
     private KnobScale<T>            scale             = null;
 
-    /** Pre-rendered background image*/
-    private Image            background        = null;
+    /** Pre-rendered background image */
+    private Image                   background        = null;
 
-    /** Listeners*/
-    private List<SelectionListener> listeners = new ArrayList<SelectionListener>();
-    
+    /** Listeners */
+    private List<SelectionListener> listeners         = new ArrayList<SelectionListener>();
+
     /**
      * Creates a new instance
      * @param parent
@@ -264,7 +264,7 @@ public class Knob<T> extends Canvas {
      */
     public void setSensitivity(double sensitivity) {
         checkThreadAccess();
-        if (sensitivity <= 0d) { throw new IllegalArgumentException("Sensitivity must be >= 0"); }
+        if (sensitivity <= 0d) { throw new IllegalArgumentException("Sensitivity must be > 0"); }
         this.sensitivity = sensitivity;
     }
     
