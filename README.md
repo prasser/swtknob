@@ -3,7 +3,7 @@ SWTKnob
 
 This project provides a Knob widget for the Standard Widget Toolkit (SWT).
 
-A knob provides functionalities similar to as a SWT Slider or SWT Scale while occupying much less
+A knob provides functionalities similar to a SWT Slider or a SWT Scale while occupying much less
 screen space.
 
 The knob is rotated by clicking and dragging the mouse up or down. While the knob's selection
@@ -18,7 +18,7 @@ SWTKnob currently supports a scale for every primitive Java data type:
 * KnobScale.Character(0, 100);
 
 A knob's value can be changed and retrieved via getters and setters, and a SelectionListener
-can be attached.
+can be attached. A knob's sensitivity can be changed via Knob.setSensitivity().
 
 Example
 ------
