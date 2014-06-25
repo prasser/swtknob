@@ -6,7 +6,6 @@ This project provides a Knob widget for the Standard Widget Toolkit (SWT).
 Example
 ------
 
-
 ```Java
 // Create Knob
 final Knob<Integer> knob = new Knob<Integer>(shell, SWT.NULL, new KnobScale.Integer(20,60));
@@ -23,6 +22,10 @@ knob.addSelectionListener(new SelectionAdapter() {
 	}
 });    
 ``` 
+
+Screenshot
+------
+[![Screenshot-1](https://raw.github.com/prasser/swtknob/master/img/screenshot.png)](https://raw.github.com/prasser/swtknob/master/img/screenshot.png)
 
 Download
 ------
