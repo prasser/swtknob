@@ -29,7 +29,7 @@ Screenshot
 
 Download
 ------
-Download [here](https://rawgithub.com/prasser/swtknob/master/jars/swtknob-0.0.1.jar). 
+Download [here](https://rawgithub.com/prasser/swtknob/master/jars/swtknob-0.1.1.jar). 
 
 Documentation
 ------

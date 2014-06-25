@@ -158,6 +158,7 @@ public class Knob<T> extends Canvas {
                 dragOffset = 0;
                 drag = true;
                 Knob.this.setCursor(hiddenCursor);
+                Knob.this.setFocus();
             }
 
             @Override
@@ -252,6 +253,7 @@ public class Knob<T> extends Canvas {
         this.value = 0d;
         if (background != null) background.dispose();
         background = null;
+        this.fireSelectionEvent();
         this.redraw();
     }
     
@@ -273,8 +275,12 @@ public class Knob<T> extends Canvas {
      */
     public void setValue(T value) {
         checkThreadAccess();
-        this.value = this.scale.toInternal(value);
-        this.redraw();
+        double val = this.scale.toInternal(value);
+        if (val != this.value) {
+            this.value = val;
+            this.redraw();
+            this.fireSelectionEvent();
+        }
     }
     
     /**
