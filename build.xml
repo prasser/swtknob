@@ -20,7 +20,7 @@
     </target>
 
     <target name="clean-javadoc">
-        <delete includeEmptyDirs="true" failonerror="true">
+        <delete includeEmptyDirs="false" failonerror="true">
             <fileset dir="doc" includes="**/*" defaultexcludes="yes">
                 <exclude name="doc/.svn" />
             </fileset>
