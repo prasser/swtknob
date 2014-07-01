@@ -60,7 +60,7 @@ import org.eclipse.swt.widgets.Listener;
 public class Knob<T> extends Canvas {
 
     /** Design */
-    private static final int        CUT_OFF       = 90;
+    private static final int        CUT_OFF       = 60;
     /** Design */
     private static final int        SCALE_DOWN    = 20;
     
