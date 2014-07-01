@@ -23,6 +23,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
@@ -105,6 +106,8 @@ public class Example1 {
             }
         });
 
+        // Focus list
+        shell.setTabList(new Control[]{knob, knob0, knob1, knob2, knob3, knob4});
 
         // Open
         shell.open();

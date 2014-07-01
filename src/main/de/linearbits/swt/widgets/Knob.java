@@ -21,11 +21,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -47,17 +48,31 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 
 /**
  * This class implements a knob widget for SWT
+ * 
  * @author Fabian Prasser
- *
+ * 
  * @param <T>
  */
 public class Knob<T> extends Canvas {
 
     /** Design */
-    private static final int        SCALE_LOWER_BOUND = 20;
+    private static final int        CUT_OFF       = 90;
+    /** Design */
+    private static final int        SCALE_DOWN    = 20;
+    
+    /**
+     * Checks the style
+     * 
+     * @param style
+     */
+    private static int checkStyle(int style) {
+        return style;
+    }
+    
     /** Design */
     private final Color             black;
     /** Design */
@@ -65,91 +80,242 @@ public class Knob<T> extends Canvas {
     /** Design */
     private final Color             lightGray;
     /** Design */
-    private final Color             white;
-    /** Design */
     private final Color             red;
-
-    /** Dragging */
-    private boolean                 drag              = false;
-    /** Dragging */
-    private int                     dragY             = 0;
-    /** Dragging */
-    private int                     dragOffset        = 0;
-    /** Dragging */
-    private int                     screenX           = 0;
-    /** Dragging */
-    private int                     screenY           = 0;
-    /** Dragging */
-    private double                  dragValue         = 0;
-    /** Dragging */
-    private final Cursor            defaultCursor     = getDefaultCursor();
-    /** Dragging */
-    private final Cursor            hiddenCursor      = getHiddenCursor();
-    /** Dragging */
-    private double                  sensitivity       = 200d;
-
-    /** Value in [0, 1] */
-    private double                  value             = 0d;
-
-    /** Scale */
-    private KnobScale<T>            scale             = null;
+    /** Design */
+    private final Cursor            defaultCursor = getDefaultCursor();
+    /** Design */
+    private final Cursor            hiddenCursor  = getHiddenCursor();
 
     /** Pre-rendered background image */
-    private Image                   background        = null;
+    private Image                   background    = null;
+    
+    /** Dragging */
+    private boolean                 drag          = false;
+    /** Dragging */
+    private int                     dragY         = 0;
+    /** Dragging */
+    private int                     dragOffset    = 0;
+    /** Dragging */
+    private int                     screenX       = 0;
+    /** Dragging */
+    private int                     screenY       = 0;
+    /** Dragging */
+    private double                  dragValue     = 0;
+    /** Dragging */
+    private double                  sensitivity   = 200d;
+    
+    /** Value handling */
+    private double                  value         = 0d;
+    /** Value handling */
+    private KnobScale<T>            scale         = null;
 
     /** Listeners */
-    private List<SelectionListener> listeners         = new ArrayList<SelectionListener>();
+    private List<SelectionListener> listeners     = new ArrayList<SelectionListener>();
 
     /**
      * Creates a new instance
+     * 
      * @param parent
      * @param style
      * @param scale
      */
     public Knob(Composite parent, int style, KnobScale<T> scale) {
 
-        super(parent, style | SWT.DOUBLE_BUFFERED);
+        super(parent, checkStyle(style) | SWT.DOUBLE_BUFFERED);
+
+        // Init
         this.scale = scale;
-        this.red = new Color(getDisplay(), 255, 0, 0);
+        this.red = new Color(getDisplay(), 255, 50, 0);
         this.black = new Color(getDisplay(), 0, 0, 0);
         this.darkGray = new Color(getDisplay(), 169, 169, 169);
         this.lightGray = new Color(getDisplay(), 211, 211, 211);
-        this.white = new Color(getDisplay(), 255, 255, 255);
+        this.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
 
-        // Dispose
-        this.addDisposeListener(new DisposeListener() {
+        // Add listeners
+        this.addDisposeListener(createDiposeHandler());
+        this.addControlListener(createResizeHandler());
+        this.addPaintListener(createPaintHandler());
+        this.addMouseListener(createMouseButtonHandler());
+        this.addMouseMoveListener(createMouseMoveHandler());
+        this.addKeyListener(createKeyHandler());
+        this.addFocusListener(createFocusHandler());
+        this.addListener(SWT.Traverse, createTraverseHandler());
+    }
+
+    /**
+     * Adds the given selection listener
+     * 
+     * @param listener
+     */
+    public void addSelectionListener(SelectionListener listener) {
+        checkWidget();
+        this.listeners.add(listener);
+    }
+
+    /**
+     * Returns the scale
+     * 
+     * @return
+     */
+    public KnobScale<T> getScale() {
+        checkWidget();
+        return this.scale;
+    }
+
+    /**
+     * Returns the value
+     * 
+     * @return
+     */
+    public T getValue() {
+        checkWidget();
+        return this.scale.toExternal(value);
+    }
+
+    /**
+     * Removes the listener
+     * 
+     * @param listener
+     */
+    public void removeSelectionListener(SelectionListener listener) {
+        this.listeners.remove(listener);
+    }
+
+    @Override
+    public void setBackground(Color arg0) {
+        super.setBackground(arg0);
+        if (background != null) background.dispose();
+        background = null;
+        redraw();
+    }
+
+    /**
+     * Sets the scale. This resets the knob.
+     * 
+     * @param scale
+     */
+    public void setScale(KnobScale<T> scale) {
+        checkWidget();
+        this.scale = scale;
+        this.value = 0d;
+        if (background != null) background.dispose();
+        background = null;
+        this.fireSelectionEvent();
+        this.redraw();
+    }
+
+    /**
+     * Sets the sensitivity
+     * 
+     * @param sensitivity
+     */
+    public void setSensitivity(double sensitivity) {
+        checkWidget();
+        if (sensitivity <= 0d) { throw new IllegalArgumentException("Sensitivity must be > 0"); }
+        this.sensitivity = sensitivity;
+    }
+
+    /**
+     * Sets the value
+     * 
+     * @param value
+     */
+    public void setValue(T value) {
+        checkWidget();
+        double val = this.scale.toInternal(value);
+        if (val != this.value) {
+            this.value = val;
+            this.redraw();
+            this.fireSelectionEvent();
+        }
+    }
+
+    /**
+     * Handle dispose events
+     * 
+     * @return
+     */
+    private DisposeListener createDiposeHandler() {
+        return new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent arg0) {
                 if (!black.isDisposed()) black.dispose();
                 if (!darkGray.isDisposed()) darkGray.dispose();
                 if (!lightGray.isDisposed()) lightGray.dispose();
-                if (!white.isDisposed()) white.dispose();
                 if (!red.isDisposed()) red.dispose();
                 if (background != null && !background.isDisposed()) background.dispose();
             }
-        });
+        };
+    }
 
-        // Resize
-        this.addControlListener(new ControlAdapter() {
+    /**
+     * Handle focus events
+     * 
+     * @return
+     */
+    private FocusListener createFocusHandler() {
+        return new FocusListener() {
             @Override
-            public void controlResized(ControlEvent arg0) {
-                if (background != null) background.dispose();
-                background = null;
+            public void focusGained(FocusEvent arg0) {
                 redraw();
             }
-        });
 
-        // Paint
-        this.addPaintListener(new PaintListener() {
             @Override
-            public void paintControl(PaintEvent arg0) {
-                paint(arg0.gc);
+            public void focusLost(FocusEvent arg0) {
+                redraw();
             }
-        });
+        };
+    }
 
-        // Mouse buttons
-        this.addMouseListener(new MouseAdapter() {
+    /**
+     * Handle key events
+     * 
+     * @return
+     */
+    private KeyAdapter createKeyHandler() {
+        return new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent arg0) {
 
+                double newValue = value;
+
+                // React on key press
+                if (arg0.character == '0') newValue = 0.0d;
+                else if (arg0.character == '1') newValue = 0.1d;
+                else if (arg0.character == '2') newValue = 0.2d;
+                else if (arg0.character == '3') newValue = 0.3d;
+                else if (arg0.character == '4') newValue = 0.4d;
+                else if (arg0.character == '5') newValue = 0.5d;
+                else if (arg0.character == '6') newValue = 0.6d;
+                else if (arg0.character == '7') newValue = 0.7d;
+                else if (arg0.character == '8') newValue = 0.8d;
+                else if (arg0.character == '9') newValue = 0.9d;
+                else if (arg0.character == '-') newValue -= 0.1d;
+                else if (arg0.character == '+') newValue += 0.1d;
+                else if (arg0.keyCode == SWT.ARROW_UP) newValue += 1d / sensitivity;
+                else if (arg0.keyCode == SWT.ARROW_DOWN) newValue -= 1d / sensitivity;
+
+                // Adjust
+                if (newValue < 0d) newValue = 0d;
+                if (newValue > 1d) newValue = 1d;
+
+                // Change
+                if (value != newValue) {
+                    value = newValue;
+                    fireSelectionEvent();
+                    redraw();
+                }
+            }
+        };
+    }
+
+    /**
+     * Handle mouse buttons
+     * 
+     * @return
+     */
+    private MouseAdapter createMouseButtonHandler() {
+        return new MouseAdapter() {
             @Override
             public void mouseDown(MouseEvent arg0) {
                 dragY = arg0.y;
@@ -171,14 +337,21 @@ public class Knob<T> extends Canvas {
                     Knob.this.setCursor(defaultCursor);
                 }
             }
-        });
+        };
+    }
 
-        // Mouse moves
-        this.addMouseMoveListener(new MouseMoveListener() {
+    /**
+     * Handle mouse moves
+     * 
+     * @return
+     */
+    private MouseMoveListener createMouseMoveHandler() {
+        return new MouseMoveListener() {
+            @Override
             public void mouseMove(MouseEvent me) {
                 if (drag) {
                     dragOffset += me.y - dragY;
-                    
+
                     double newValue = dragValue - dragOffset / sensitivity;
                     if (newValue < 0d) {
                         dragOffset = (int) (dragValue * sensitivity);
@@ -187,7 +360,7 @@ public class Knob<T> extends Canvas {
                         dragOffset = (int) (dragValue * sensitivity - sensitivity);
                         newValue = 1d;
                     }
-                    
+
                     if (value != newValue) {
                         value = newValue;
                         fireSelectionEvent();
@@ -197,139 +370,65 @@ public class Knob<T> extends Canvas {
                     getDisplay().setCursorLocation(screenX, screenY);
                 }
             }
-        });
-        
-        // Keyboard
-        this.addKeyListener(new KeyAdapter(){
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                
-                double newValue = value;
-                
-                // React on key press
-                if (arg0.character=='0') newValue = 0.0d;
-                else if (arg0.character=='1') newValue = 0.1d;
-                else if (arg0.character=='2') newValue = 0.2d;
-                else if (arg0.character=='3') newValue = 0.3d;
-                else if (arg0.character=='4') newValue = 0.4d;
-                else if (arg0.character=='5') newValue = 0.5d;
-                else if (arg0.character=='6') newValue = 0.6d;
-                else if (arg0.character=='7') newValue = 0.7d;
-                else if (arg0.character=='8') newValue = 0.8d;
-                else if (arg0.character=='9') newValue = 0.9d;
-                else if (arg0.character=='-') newValue -= 0.1d;
-                else if (arg0.character=='+') newValue += 0.1d;
-                
-                // Adjust
-                if (newValue < 0d) newValue = 0d;
-                if (newValue > 1d) newValue = 1d;
+        };
+    }
 
-                // Change
-                if (value != newValue) {
-                    value = newValue;
-                    fireSelectionEvent();
-                    redraw();
+    /**
+     * Handle paint events
+     * 
+     * @return
+     */
+    private PaintListener createPaintHandler() {
+        return new PaintListener() {
+            @Override
+            public void paintControl(PaintEvent arg0) {
+                paint(arg0.gc);
+            }
+        };
+    }
+
+    /**
+     * Handle resizes
+     * 
+     * @return
+     */
+    private ControlAdapter createResizeHandler() {
+        return new ControlAdapter() {
+            @Override
+            public void controlResized(ControlEvent arg0) {
+                if (background != null) background.dispose();
+                background = null;
+                redraw();
+            }
+        };
+    }
+
+    /**
+     * Handle traverse events
+     * 
+     * @return
+     */
+    private Listener createTraverseHandler() {
+        return new Listener() {
+            public void handleEvent(Event e) {
+                switch (e.detail) {
+                case SWT.TRAVERSE_ESCAPE:
+                case SWT.TRAVERSE_RETURN:
+                case SWT.TRAVERSE_TAB_NEXT:
+                case SWT.TRAVERSE_TAB_PREVIOUS:
+                case SWT.TRAVERSE_PAGE_NEXT:
+                case SWT.TRAVERSE_PAGE_PREVIOUS:
+                    e.doit = true;
+                    break;
                 }
             }
-        });
+        };
     }
 
-    /**
-     * Adds the listener
-     * @param listener
-     */
-    public void addSelectionListener(SelectionListener listener) {
-        this.listeners.add(listener);
-    }
-
-    /**
-     * Returns the scale
-     * 
-     * @return
-     */
-    public KnobScale<T> getScale() {
-        checkThreadAccess();
-        return this.scale;
-    }
-
-    /**
-     * Returns the value
-     * 
-     * @return
-     */
-    public T getValue() {
-        checkThreadAccess();
-        return this.scale.toExternal(value);
-    }
-
-    /**
-     * Removes the listener
-     * @param listener
-     */
-    public void removeSelectionListener(SelectionListener listener){
-        this.listeners.remove(listener);
-    }
-
-    @Override
-    public void setBackground(Color arg0) {
-        super.setBackground(arg0);
-        if (background != null) background.dispose();
-        background = null;
-        redraw();
-    }
-
-    /**
-     * Sets the scale. This resets the knob.
-     * 
-     * @param scale
-     */
-    public void setScale(KnobScale<T> scale) {
-        checkThreadAccess();
-        this.scale = scale;
-        this.value = 0d;
-        if (background != null) background.dispose();
-        background = null;
-        this.fireSelectionEvent();
-        this.redraw();
-    }
-    
-    /**
-     * Sets the sensitivity
-     * 
-     * @param sensitivity
-     */
-    public void setSensitivity(double sensitivity) {
-        checkThreadAccess();
-        if (sensitivity <= 0d) { throw new IllegalArgumentException("Sensitivity must be > 0"); }
-        this.sensitivity = sensitivity;
-    }
-    
-    /**
-     * Sets the value
-     * 
-     * @param value
-     */
-    public void setValue(T value) {
-        checkThreadAccess();
-        double val = this.scale.toInternal(value);
-        if (val != this.value) {
-            this.value = val;
-            this.redraw();
-            this.fireSelectionEvent();
-        }
-    }
-    
-    /**
-     * Checks the thread access
-     */
-    private void checkThreadAccess() {
-        if (Thread.currentThread() != getDisplay().getThread()) { throw new SWTException("Invalid thread access"); }
-    }
-    
     /**
      * Fires a selection event
      */
-    private void fireSelectionEvent(){
+    private void fireSelectionEvent() {
         Event event = new Event();
         event.widget = this;
         SelectionEvent sevent = new SelectionEvent(event);
@@ -373,6 +472,10 @@ public class Knob<T> extends Canvas {
      * @return
      */
     private Point getLineCoordinates(int centerX, int centerY, int size, double value) {
+
+        value *= 1 - CUT_OFF / 360d;
+        value += CUT_OFF / 720d;
+
         double r = (double) size;
         double x = r * Math.sin(-value * 2d * Math.PI);
         double y = r * Math.cos(-value * 2d * Math.PI);
@@ -389,20 +492,20 @@ public class Knob<T> extends Canvas {
         Point gcsize = this.getSize();
 
         // Directly paint to the canvas
-        if (gcsize.x >= SCALE_LOWER_BOUND && gcsize.y >= SCALE_LOWER_BOUND) {
+        if (gcsize.x >= SCALE_DOWN && gcsize.y >= SCALE_DOWN) {
             paint(gc, gcsize);
 
-        // Paint to an image and scale down for better results
+            // Paint to an image and scale down for better results
         } else {
-            Image image = new Image(getDisplay(), SCALE_LOWER_BOUND, SCALE_LOWER_BOUND);
+            Image image = new Image(getDisplay(), SCALE_DOWN, SCALE_DOWN);
             GC gc2 = new GC(image);
-            paint(gc2, new Point(SCALE_LOWER_BOUND, SCALE_LOWER_BOUND));
+            paint(gc2, new Point(SCALE_DOWN, SCALE_DOWN));
             gc2.dispose();
 
             int size = Math.min(gcsize.x, gcsize.y);
             gc.setAdvanced(true);
             gc.setAntialias(SWT.ON);
-            gc.drawImage(image, 0, 0, SCALE_LOWER_BOUND, SCALE_LOWER_BOUND, 0, 0, size, size);
+            gc.drawImage(image, 0, 0, SCALE_DOWN, SCALE_DOWN, 0, 0, size, size);
         }
     }
 
@@ -413,10 +516,10 @@ public class Knob<T> extends Canvas {
      * @param gcsize
      */
     private void paint(GC gc, Point gcsize) {
-        
+
         // Determine size
         double min = (double) Math.min(gcsize.x, gcsize.y);
-        int imageSize = (int)Math.round(min);
+        int imageSize = (int) Math.round(min);
         if (background == null || background.isDisposed()) {
             paintBackground(imageSize, imageSize);
         }
@@ -432,7 +535,9 @@ public class Knob<T> extends Canvas {
         double tick = min * 0.3d;
         double inner = min * 0.4d;
         double outer = min * 0.1d;
+        double plateau = min * 0.075d;
         double indicatorWidth = min / 20d;
+        double focusWidth = indicatorWidth / 2d;
         if (indicatorWidth < 1d) indicatorWidth = 1d;
         double tickWidth = indicatorWidth / 3d;
         if (tickWidth < 1d) tickWidth = 1d;
@@ -444,27 +549,55 @@ public class Knob<T> extends Canvas {
         int iCenterX = iOuter + iInner;
         int iCenterY = iOuter + iInner;
         int iIndicatorWidth = (int) Math.round(indicatorWidth);
+        int iFocusWidth = (int) Math.round(focusWidth);
         iIndicatorWidth -= 1 - iIndicatorWidth % 2;
-        if (iIndicatorWidth < 1d) iIndicatorWidth = 1;
+        if (iIndicatorWidth < 1) iIndicatorWidth = 1;
+        iFocusWidth -= 1 - iFocusWidth % 2;
+        if (iFocusWidth < 1) iFocusWidth = 1;
+        int iPlateau = (int) Math.round(plateau);
+
+        // Draw focus
+        if (this.isFocusControl()) {
+
+            // Draw plateau
+            gc.setForeground(red);
+            gc.setBackground(red);
+            gc.fillOval(iCenterX - iPlateau, iCenterY - iPlateau, iPlateau * 2, iPlateau * 2);
+
+        }
 
         // Draw the value indicator
         Point line = getLineCoordinates(iCenterX, iCenterY, iTick, scale.toNearestInternal(value));
-        gc.setForeground(red);
-        gc.setBackground(red);
+        Color color = this.isFocusControl() ? black : red;
+        gc.setForeground(color);
+        gc.setBackground(color);
         gc.setLineCap(SWT.CAP_ROUND);
         gc.setLineWidth(iIndicatorWidth);
         gc.drawLine(line.x, line.y, iCenterX, iCenterY);
+
+        // Draw focus
+        if (this.isFocusControl()) {
+
+            gc.setForeground(red);
+            gc.setBackground(red);
+            gc.setLineCap(SWT.CAP_ROUND);
+            gc.setLineWidth(iFocusWidth);
+            gc.drawLine(line.x, line.y, iCenterX, iCenterY);
+        }
     }
 
     /**
      * Paint the background image
+     * 
      * @param width
      * @param height
      */
     private void paintBackground(int width, int height) {
-        
-        this.background = new Image(getDisplay(), width, height);
+
+        Display display = getDisplay();
+        this.background = new Image(display, width, height);
         GC gc = new GC(this.background);
+
         gc.setBackground(getBackground());
         gc.fillRectangle(0, 0, width, height);
 
@@ -495,30 +628,33 @@ public class Knob<T> extends Canvas {
 
         // Compute lines for ticks
         List<Point> ticks11 = new ArrayList<Point>();
-        
+
         // Adapt
         Point ap1 = getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0d);
         Point ap2 = getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, stepping);
         int dX = Math.abs(ap1.x - ap2.x);
         int dY = Math.abs(ap1.y - ap2.y);
-        if (1d / stepping <= 72 && (dX>5 || dY>5)) {
-            
+        if (1d / stepping <= 72 && (dX > 5 || dY > 5)) {
+
             // Ticks matching scale
-            for (double v = 0d; v<=1d; v+=stepping) {
-                double value = scale.toNearestInternal(v);
-                ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, value));
+            for (double v = 0d; v <= 1d - stepping; v += stepping) {
+                double tick = scale.toNearestInternal(v);
+                ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, tick));
             }
-            
+            double tick = scale.toNearestInternal(1d);
+            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, tick));
+
         } else {
             // Default
             ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0d));
-            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.25d));
-            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.5d));
-            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.75d));
             ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.125d));
+            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.25d));
             ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.375d));
+            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.5d));
             ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.625d));
+            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.75d));
             ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 0.875d));
+            ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, 1.0d));
         }
 
         // Activate anti-aliasing
@@ -528,9 +664,15 @@ public class Knob<T> extends Canvas {
         // Draw the ticks
         gc.setForeground(black);
         gc.setBackground(black);
-        gc.setLineWidth(iTickWidth);
         for (int i = 0; i < ticks11.size(); i++) {
             Point p1 = ticks11.get(i);
+            if (i==0 || i == ticks11.size()-1) {
+                gc.setLineCap(SWT.CAP_ROUND);
+                gc.setLineWidth(iIndicatorWidth);
+            } else {
+                gc.setLineCap(SWT.CAP_FLAT);
+                gc.setLineWidth(iTickWidth);
+            }
             gc.drawLine(p1.x, p1.y, iCenterX, iCenterY);
         }
 
