@@ -53,7 +53,7 @@ Screenshot
 
 Download
 ------
-A binary version (JAR file) is available for download [here](https://rawgithub.com/prasser/swtknob/master/jars/swtknob-0.1.1.jar). 
+A binary version (JAR file) is available for download [here](https://rawgithub.com/prasser/swtknob/master/jars/swtknob-0.2.0.jar). 
 
 Documentation
 ------

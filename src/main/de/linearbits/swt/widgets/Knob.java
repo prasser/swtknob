@@ -26,6 +26,8 @@ import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -193,6 +195,40 @@ public class Knob<T> extends Canvas {
                     }
 
                     getDisplay().setCursorLocation(screenX, screenY);
+                }
+            }
+        });
+        
+        // Keyboard
+        this.addKeyListener(new KeyAdapter(){
+            @Override
+            public void keyPressed(KeyEvent arg0) {
+                
+                double newValue = value;
+                
+                // React on key press
+                if (arg0.character=='0') newValue = 0.0d;
+                else if (arg0.character=='1') newValue = 0.1d;
+                else if (arg0.character=='2') newValue = 0.2d;
+                else if (arg0.character=='3') newValue = 0.3d;
+                else if (arg0.character=='4') newValue = 0.4d;
+                else if (arg0.character=='5') newValue = 0.5d;
+                else if (arg0.character=='6') newValue = 0.6d;
+                else if (arg0.character=='7') newValue = 0.7d;
+                else if (arg0.character=='8') newValue = 0.8d;
+                else if (arg0.character=='9') newValue = 0.9d;
+                else if (arg0.character=='-') newValue -= 0.1d;
+                else if (arg0.character=='+') newValue += 0.1d;
+                
+                // Adjust
+                if (newValue < 0d) newValue = 0d;
+                if (newValue > 1d) newValue = 1d;
+
+                // Change
+                if (value != newValue) {
+                    value = newValue;
+                    fireSelectionEvent();
+                    redraw();
                 }
             }
         });

@@ -4,7 +4,7 @@
     <description>Builds, tests, and runs the project.</description>
 
     <!-- defines the version number -->
-    <property name="version" value="0.1.1" />
+    <property name="version" value="0.2.0" />
 
     <target name="release" depends="jars">
     </target>
