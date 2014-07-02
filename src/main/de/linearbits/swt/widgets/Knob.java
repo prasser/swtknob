@@ -74,20 +74,22 @@ public class Knob<T> extends Canvas {
     }
     
     /** Design */
-    private final Color             black;
-    /** Design */
-    private final Color             darkGray;
-    /** Design */
-    private final Color             lightGray;
-    /** Design */
-    private final Color             red;
-    /** Design */
     private final Cursor            defaultCursor = getDefaultCursor();
     /** Design */
     private final Cursor            hiddenCursor  = getHiddenCursor();
 
-    /** Pre-rendered background image */
-    private Image                   background    = null;
+    /** Default color profile*/
+    private final KnobColorProfile  standardDefaultProfile;
+    /** Focused color profile*/
+    private final KnobColorProfile  standardFocusedProfile;
+    /** Default color profile*/
+    private KnobColorProfile  defaultProfile;
+    /** Focused color profile*/
+    private KnobColorProfile  focusedProfile;
+    /** Pre-rendered default background */
+    private Image                   defaultBackground = null;
+    /** Pre-rendered focused background */
+    private Image                   focusedBackground = null;
     
     /** Dragging */
     private boolean                 drag          = false;
@@ -125,11 +127,11 @@ public class Knob<T> extends Canvas {
 
         // Init
         this.scale = scale;
-        this.red = new Color(getDisplay(), 255, 50, 0);
-        this.black = new Color(getDisplay(), 0, 0, 0);
-        this.darkGray = new Color(getDisplay(), 169, 169, 169);
-        this.lightGray = new Color(getDisplay(), 211, 211, 211);
         this.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
+        this.standardDefaultProfile = KnobColorProfile.createDefaultSystemProfile(parent.getDisplay());
+        this.standardFocusedProfile = KnobColorProfile.createFocusedSystemProfile(parent.getDisplay());
+        this.defaultProfile = standardDefaultProfile;
+        this.focusedProfile = standardFocusedProfile;
 
         // Add listeners
         this.addDisposeListener(createDiposeHandler());
@@ -181,11 +183,39 @@ public class Knob<T> extends Canvas {
         this.listeners.remove(listener);
     }
 
+    /**
+     * Sets the default color profile
+     */
+    public void setDefaultColorProfile(KnobColorProfile profile) {
+        checkWidget();
+        profile.check();
+        this.defaultProfile = profile;
+        if (defaultBackground != null) defaultBackground.dispose();
+        defaultBackground = null;
+        redraw();
+    }
+
+
+    /**
+     * Sets the default focused profile
+     */
+    public void setFocusedColorProfile(KnobColorProfile profile) {
+        checkWidget();
+        profile.check();
+        this.focusedProfile = profile;
+        if (focusedBackground != null) focusedBackground.dispose();
+        focusedBackground = null;
+        redraw();
+    }
+
     @Override
     public void setBackground(Color arg0) {
         super.setBackground(arg0);
-        if (background != null) background.dispose();
-        background = null;
+        checkWidget();
+        if (defaultBackground != null) defaultBackground.dispose();
+        if (focusedBackground != null) focusedBackground.dispose();
+        defaultBackground = null;
+        focusedBackground = null;
         redraw();
     }
 
@@ -198,8 +228,10 @@ public class Knob<T> extends Canvas {
         checkWidget();
         this.scale = scale;
         this.value = 0d;
-        if (background != null) background.dispose();
-        background = null;
+        if (defaultBackground != null) defaultBackground.dispose();
+        if (focusedBackground != null) focusedBackground.dispose();
+        defaultBackground = null;
+        focusedBackground = null;
         this.fireSelectionEvent();
         this.redraw();
     }
@@ -239,11 +271,10 @@ public class Knob<T> extends Canvas {
         return new DisposeListener() {
             @Override
             public void widgetDisposed(DisposeEvent arg0) {
-                if (!black.isDisposed()) black.dispose();
-                if (!darkGray.isDisposed()) darkGray.dispose();
-                if (!lightGray.isDisposed()) lightGray.dispose();
-                if (!red.isDisposed()) red.dispose();
-                if (background != null && !background.isDisposed()) background.dispose();
+                if (defaultBackground != null && !defaultBackground.isDisposed()) defaultBackground.dispose();
+                if (focusedBackground != null && !focusedBackground.isDisposed()) focusedBackground.dispose();
+                if (!standardDefaultProfile.isDisposed()) standardDefaultProfile.dispose();
+                if (!standardFocusedProfile.isDisposed()) standardFocusedProfile.dispose();
             }
         };
     }
@@ -396,8 +427,10 @@ public class Knob<T> extends Canvas {
         return new ControlAdapter() {
             @Override
             public void controlResized(ControlEvent arg0) {
-                if (background != null) background.dispose();
-                background = null;
+                if (defaultBackground != null) defaultBackground.dispose();
+                if (focusedBackground != null) focusedBackground.dispose();
+                defaultBackground = null;
+                focusedBackground = null;
                 redraw();
             }
         };
@@ -516,12 +549,18 @@ public class Knob<T> extends Canvas {
      * @param gcsize
      */
     private void paint(GC gc, Point gcsize) {
+        
+        KnobColorProfile profile = this.defaultProfile;
+        if (this.isFocusControl()) profile = this.focusedProfile;
 
         // Determine size
         double min = (double) Math.min(gcsize.x, gcsize.y);
         int imageSize = (int) Math.round(min);
-        if (background == null || background.isDisposed()) {
-            paintBackground(imageSize, imageSize);
+        if (defaultBackground == null || defaultBackground.isDisposed()) {
+            defaultBackground = paintBackground(imageSize, imageSize, this.defaultProfile);
+        }
+        if (focusedBackground == null || focusedBackground.isDisposed()) {
+            focusedBackground = paintBackground(imageSize, imageSize, this.focusedProfile);
         }
 
         // Activate anti-aliasing
@@ -529,7 +568,8 @@ public class Knob<T> extends Canvas {
         gc.setAntialias(SWT.ON);
 
         // Draw background
-        gc.drawImage(this.background, 0, 0, imageSize, imageSize, 0, 0, imageSize, imageSize);
+        Image background = this.isFocusControl() ? focusedBackground : defaultBackground;
+        gc.drawImage(background, 0, 0, imageSize, imageSize, 0, 0, imageSize, imageSize);
 
         // Compute parameters
         double tick = min * 0.3d;
@@ -556,34 +596,24 @@ public class Knob<T> extends Canvas {
         if (iFocusWidth < 1) iFocusWidth = 1;
         int iPlateau = (int) Math.round(plateau);
 
-        // Draw focus
-        if (this.isFocusControl()) {
-
-            // Draw plateau
-            gc.setForeground(red);
-            gc.setBackground(red);
-            gc.fillOval(iCenterX - iPlateau, iCenterY - iPlateau, iPlateau * 2, iPlateau * 2);
-
-        }
+        // Draw plateau
+        gc.setForeground(profile.getPlateauInner());
+        gc.setBackground(profile.getPlateauInner());
+        gc.fillOval(iCenterX - iPlateau, iCenterY - iPlateau, iPlateau * 2, iPlateau * 2);
 
         // Draw the value indicator
         Point line = getLineCoordinates(iCenterX, iCenterY, iTick, scale.toNearestInternal(value));
-        Color color = this.isFocusControl() ? black : red;
-        gc.setForeground(color);
-        gc.setBackground(color);
+        gc.setForeground(profile.getIndicatorOuter());
+        gc.setForeground(profile.getIndicatorOuter());
         gc.setLineCap(SWT.CAP_ROUND);
         gc.setLineWidth(iIndicatorWidth);
         gc.drawLine(line.x, line.y, iCenterX, iCenterY);
 
-        // Draw focus
-        if (this.isFocusControl()) {
-
-            gc.setForeground(red);
-            gc.setBackground(red);
-            gc.setLineCap(SWT.CAP_ROUND);
-            gc.setLineWidth(iFocusWidth);
-            gc.drawLine(line.x, line.y, iCenterX, iCenterY);
-        }
+        gc.setForeground(profile.getIndicatorInner());
+        gc.setForeground(profile.getIndicatorInner());
+        gc.setLineCap(SWT.CAP_ROUND);
+        gc.setLineWidth(iFocusWidth);
+        gc.drawLine(line.x, line.y, iCenterX, iCenterY);
     }
 
     /**
@@ -591,12 +621,13 @@ public class Knob<T> extends Canvas {
      * 
      * @param width
      * @param height
+     * @param profile 
      */
-    private void paintBackground(int width, int height) {
+    private Image paintBackground(int width, int height, KnobColorProfile profile) {
 
         Display display = getDisplay();
-        this.background = new Image(display, width, height);
-        GC gc = new GC(this.background);
+        Image background = new Image(display, width, height);
+        GC gc = new GC(background);
 
         gc.setBackground(getBackground());
         gc.fillRectangle(0, 0, width, height);
@@ -662,8 +693,8 @@ public class Knob<T> extends Canvas {
         gc.setAntialias(SWT.ON);
 
         // Draw the ticks
-        gc.setForeground(black);
-        gc.setBackground(black);
+        gc.setForeground(profile.getTick());
+        gc.setBackground(profile.getTick());
         gc.setLineCap(SWT.CAP_FLAT);
         gc.setLineWidth(iTickWidth);
         for (int i = 0; i < ticks11.size(); i++) {
@@ -673,20 +704,26 @@ public class Knob<T> extends Canvas {
 
         // Draw the background
         KnobRenderer renderer = new KnobRenderer();
-        Image image = renderer.render(getDisplay(), red, iInner * 2, iInner * 2);
+        int transparent = profile.getTransparentByte();
+        Color transparentColor = new Color(getDisplay(), transparent, transparent, transparent); 
+        Image image = renderer.render(getDisplay(), transparentColor, profile, iInner * 2, iInner * 2);
         gc.drawImage(image, 0, 0, iInner * 2, iInner * 2, iOuter, iOuter, iInner * 2, iInner * 2);
+        transparentColor.dispose();
         image.dispose();
 
         // Draw circle
-        gc.setForeground(black);
-        gc.setBackground(black);
+        gc.setForeground(profile.getBorder());
+        gc.setBackground(profile.getBorder());
         gc.setLineWidth(1);
         gc.drawOval(iOuter, iOuter, iInner * 2, iInner * 2);
 
         // Draw plateau
-        gc.setForeground(black);
-        gc.setBackground(black);
+        gc.setForeground(profile.getPlateauOuter());
+        gc.setBackground(profile.getPlateauOuter());
         gc.fillOval(iCenterX - iPlateau, iCenterY - iPlateau, iPlateau * 2, iPlateau * 2);
         gc.dispose();
+        
+        // Return
+        return background;
     }
 }

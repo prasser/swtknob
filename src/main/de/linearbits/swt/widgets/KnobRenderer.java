@@ -174,8 +174,9 @@ class KnobRenderer {
      * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
      * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
      * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+     * @param profile 
      */
-    private void render(Graphics g, Color background, int width, int height) {
+    private void render(Graphics g, Color background, KnobColorProfile profile, int width, int height) {
 
         Graphics2D g2 = (Graphics2D) g;
         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
@@ -187,42 +188,61 @@ class KnobRenderer {
         g2.fillRect(0, 0, width, height);
 
         // Fills the circle with solid blue color
-        g2.setColor(new Color(190, 190, 190));
+        Color c = new Color(profile.getBackground().getRed(), 
+                            profile.getBackground().getGreen(), 
+                            profile.getBackground().getBlue());
+        g2.setColor(c);
         g2.fillOval(0, 0, width - 1, height - 1);
 
         // Adds shadows at the top
         Paint p;
-        p = new GradientPaint(0, 0, new Color(0.0f, 0.0f, 0.0f, 0.4f), 0, height, new Color(0.0f,
-                                                                                            0.0f,
-                                                                                            0.0f,
-                                                                                            0.0f));
+		Color c1 = new Color(byteToFloat(profile.getShadow().getRed()),
+		                     byteToFloat(profile.getShadow().getGreen()),
+		                     byteToFloat(profile.getShadow().getBlue()), 0.4f);
+		Color c2 = new Color(byteToFloat(profile.getShadow().getRed()),
+		                     byteToFloat(profile.getShadow().getGreen()),
+		                     byteToFloat(profile.getShadow().getBlue()), 0.0f);
+        p = new GradientPaint(0, 0, c1, 0, height, c2);
         g2.setPaint(p);
         g2.fillOval(0, 0, width - 1, height - 1);
 
         // Adds highlights at the bottom
-        p = new GradientPaint(0, 0, new Color(1.0f, 1.0f, 1.0f, 0.0f), 0, height, new Color(1.0f,
-                                                                                            1.0f,
-                                                                                            1.0f,
-                                                                                            0.4f));
+        c1 = new Color(byteToFloat(profile.getHighlightBottom().getRed()), 
+                       byteToFloat(profile.getHighlightBottom().getGreen()), 
+                       byteToFloat(profile.getHighlightBottom().getBlue()), 0.0f);
+        c2 = new Color(byteToFloat(profile.getHighlightBottom().getRed()), 
+                       byteToFloat(profile.getHighlightBottom().getGreen()), 
+                       byteToFloat(profile.getHighlightBottom().getBlue()), 0.4f);
+        p = new GradientPaint(0, 0, c1, 0, height, c2);
         g2.setPaint(p);
         g2.fillOval(0, 0, width - 1, height - 1);
 
         // Creates dark edges for 3D effect
+        c1 = new Color(profile.getEdgeFrom().getRed(), 
+                       profile.getEdgeFrom().getGreen(), 
+                       profile.getEdgeFrom().getBlue(), 127);
+        c2 = new Color(byteToFloat(profile.getEdgeTo().getRed()), 
+                       byteToFloat(profile.getEdgeTo().getGreen()), 
+                       byteToFloat(profile.getEdgeTo().getBlue()), 0.8f);
         p = new RadialGradientPaint(new Point2D.Double(width / 2.0, height / 2.0),
                                     width / 2.0f,
                                     new float[] { 0.0f, 1.0f },
-                                    new Color[] { new Color(6, 76, 160, 127),
-                                            new Color(0.0f, 0.0f, 0.0f, 0.8f) });
+                                    new Color[] { c1, c2});
         g2.setPaint(p);
         g2.fillOval(0, 0, width - 1, height - 1);
 
         // Adds oval inner highlight at the bottom
+        c1 = new Color(profile.getHighlightInnerFrom().getRed(), 
+                       profile.getHighlightInnerFrom().getGreen(), 
+                       profile.getHighlightInnerFrom().getBlue(), 255);
+        c2 = new Color(profile.getHighlightInnerTo().getRed(), 
+                       profile.getHighlightInnerTo().getGreen(), 
+                       profile.getHighlightInnerTo().getBlue(), 0);
         p = new RadialGradientPaint(new Point2D.Double(width / 2.0, height * 1.5),
                                     width / 2.3f,
                                     new Point2D.Double(width / 2.0, height * 1.75 + 6),
                                     new float[] { 0.0f, 0.8f },
-                                    new Color[] { new Color(64, 142, 203, 255),
-                                            new Color(64, 142, 203, 0) },
+                                    new Color[] { c1, c2 },
                                     RadialGradientPaint.CycleMethod.NO_CYCLE,
                                     RadialGradientPaint.ColorSpaceType.SRGB,
                                     AffineTransform.getScaleInstance(1.0, 0.5));
@@ -230,12 +250,17 @@ class KnobRenderer {
         g2.fillOval(0, 0, width - 1, height - 1);
 
         // Adds oval specular highlight at the top left
+        c1 = new Color(byteToFloat(profile.getHighlightSpecular().getRed()), 
+                       byteToFloat(profile.getHighlightSpecular().getGreen()), 
+                       byteToFloat(profile.getHighlightSpecular().getBlue()), 0.4f);
+        c2 = new Color(byteToFloat(profile.getHighlightSpecular().getRed()), 
+                       byteToFloat(profile.getHighlightSpecular().getGreen()), 
+                       byteToFloat(profile.getHighlightSpecular().getBlue()), 0.0f);
         p = new RadialGradientPaint(new Point2D.Double(width / 2.0, height / 2.0),
                                     width / 1.4f,
                                     new Point2D.Double(45.0, 25.0),
                                     new float[] { 0.0f, 0.5f },
-                                    new Color[] { new Color(1.0f, 1.0f, 1.0f, 0.4f),
-                                            new Color(1.0f, 1.0f, 1.0f, 0.0f) },
+                                    new Color[] { c1, c2},
                                     RadialGradientPaint.CycleMethod.NO_CYCLE);
         g2.setPaint(p);
         g2.fillOval(0, 0, width - 1, height - 1);
@@ -247,19 +272,28 @@ class KnobRenderer {
     /**
      * Renders a knob with the given width and height
      * 
-     * @param background
+     * @param transparent
      * @param width
      * @param height
      * @return
      */
-    Image render(Display display, org.eclipse.swt.graphics.Color background, int width, int height) {
+    Image render(Display display, org.eclipse.swt.graphics.Color transparent, KnobColorProfile profile, int width, int height) {
 
         BufferedImage image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
         Graphics g = image.getGraphics();
-        render(g, new Color(background.getRed(), background.getGreen(), background.getBlue()), width, height);
+        render(g, new Color(transparent.getRed(), transparent.getGreen(), transparent.getBlue()), profile, width, height);
         g.dispose();
         ImageData data = convertToSWT(image);
-        data.transparentPixel = data.palette.getPixel(background.getRGB());
+        data.transparentPixel = data.palette.getPixel(transparent.getRGB());
         return new Image(display, data);
+    }
+    
+    /**
+     * Converts the byte to a float between 0 and 1
+     * @param value
+     * @return
+     */
+    private float byteToFloat(int value){
+        return (float)Math.round((double)value / 255d);
     }
 }
