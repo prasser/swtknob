@@ -46,7 +46,7 @@ public class Example3 {
         Display display = new Display();
         Shell shell = new Shell(display);
         shell.setText("SWT");
-        shell.setSize(70, 160);
+        shell.setSize(70, 250);
         shell.setLayout(new GridLayout(1, false));
 
         // Create Knob
@@ -64,6 +64,15 @@ public class Example3 {
         knob2.setLayoutData(data2);
         knob2.setDefaultColorProfile(KnobColorProfile.createDefaultProfile());
         knob2.setFocusedColorProfile(KnobColorProfile.createFocusedProfile());
+
+        // Create Knob
+        Knob<Long> knob3 = new Knob<Long>(shell, SWT.NULL, new KnobScale.Long(1l, 20l));
+        GridData data3 = new GridData();
+        data3.heightHint = 50;
+        data3.widthHint = 50;
+        knob3.setLayoutData(data3);
+        knob3.setDefaultColorProfile(KnobColorProfile.createDefaultBrownProfile());
+        knob3.setFocusedColorProfile(KnobColorProfile.createFocusedBrownProfile());
 
         // Focus list
         shell.setTabList(new Control[]{knob1, knob2});

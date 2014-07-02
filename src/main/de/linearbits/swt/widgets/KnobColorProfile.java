@@ -31,33 +31,33 @@ import org.eclipse.swt.widgets.Display;
 public class KnobColorProfile {
 
     /** Design */
-    private Color background;        // g2.setColor(new Color(190, 190, 190));
+    private Color background;
     /** Design */
-    private Color border;            // new Color(getDisplay(), 0, 0, 0);
+    private Color border;
     /** Design */
-    private Color edgeFrom;          // new Color(6, 76, 160, 127),
+    private Color edgeFrom;
     /** Design */
-    private Color edgeTo;            // new Color(0.0f, 0.0f, 0.0f, 0.8f) });
+    private Color edgeTo;
     /** Design */
-    private Color highlightBottom;   // 1.0f, 1.0f, 1.0f,
+    private Color highlightBottom;
     /** Design */
-    private Color highlightInnerFrom; // new Color(64, 142, 203, 255),
+    private Color highlightInnerFrom;
     /** Design */
-    private Color highlightInnerTo;  // new Color(64, 142, 203, 0) },
+    private Color highlightInnerTo;
     /** Design */
-    private Color highlightSpecular; // new Color(255, 255,255);
+    private Color highlightSpecular;
     /** Design */
-    private Color indicatorInner;    // new Color(getDisplay(), 255, 50, 0);
+    private Color indicatorInner;
     /** Design */
-    private Color indicatorOuter;    // new Color(getDisplay(), 0, 0, 0);
+    private Color indicatorOuter;
     /** Design */
-    private Color plateauInner;      // new Color(getDisplay(), 255, 50, 0);
+    private Color plateauInner;
     /** Design */
-    private Color plateauOuter;      // new Color(getDisplay(), 0, 0, 0);
+    private Color plateauOuter;
     /** Design */
-    private Color shadow;            // new Color(0.0f, 0.0f, 0.0f)
+    private Color shadow;
     /** Design */
-    private Color tick;              // new Color(getDisplay(), 0, 0, 0);
+    private Color tick;
 
     private boolean disposed = false;
     
@@ -389,7 +389,7 @@ public class KnobColorProfile {
      * @return
      */
     public static KnobColorProfile createDefaultProfile() {
-        return createDefaultProfile(Display.getCurrent());
+        return createDefaultBlueRedProfile(Display.getCurrent());
     }
     
     /**
@@ -397,7 +397,7 @@ public class KnobColorProfile {
      * @return
      */
     public static KnobColorProfile createFocusedProfile() {
-        return createFocusedProfile(Display.getCurrent());
+        return createFocusedBlueRedProfile(Display.getCurrent());
     }
 
     /**
@@ -417,11 +417,75 @@ public class KnobColorProfile {
     }
 
     /**
+     * Creates a default brown profile
+     * @return
+     */
+    public static KnobColorProfile createDefaultBrownProfile() {
+        return createDefaultBrownProfile(Display.getCurrent());
+    }
+    
+    /**
+     * Creates a focused brown profile
+     * @return
+     */
+    public static KnobColorProfile createFocusedBrownProfile() {
+        return createFocusedBrownProfile(Display.getCurrent());
+    }
+
+    /**
      * Creates a default profile
      * @param display
      * @return
      */
-    public static KnobColorProfile createDefaultProfile(Display display) {
+    public static KnobColorProfile createDefaultBrownProfile(Display display) {
+        KnobColorProfile result = new KnobColorProfile();
+        result.setBackground(new Color(display, 101, 88, 77));
+        result.setBorder(new Color(display, 54, 29, 6));
+        result.setEdgeFrom(new Color(display, 6, 76, 160));
+        result.setEdgeTo(new Color(display, 54, 29, 6));
+        result.setHighlightBottom(new Color(display, 110, 76, 45));
+        result.setHighlightInnerFrom(new Color(display, 110, 76, 45));
+        result.setHighlightInnerTo(new Color(display, 110, 76, 45));
+        result.setHighlightSpecular(new Color(display, 110, 76, 45));
+        result.setIndicatorInner(new Color(display, 133, 70, 14));
+        result.setIndicatorOuter(new Color(display, 133, 70, 14));
+        result.setPlateauInner(new Color(display, 54, 29, 6));
+        result.setPlateauOuter(new Color(display, 54, 29, 6));
+        result.setShadow(new Color(display, 54, 29, 6));
+        result.setTick(new Color(display, 80, 55, 32));
+        return result;
+    }
+    
+    /**
+     * Creates a focused profile
+     * @param display
+     * @return
+     */
+    public static KnobColorProfile createFocusedBrownProfile(Display display) {
+        KnobColorProfile result = new KnobColorProfile();
+        result.setBackground(new Color(display, 101, 88, 77));
+        result.setBorder(new Color(display, 54, 29, 6));
+        result.setEdgeFrom(new Color(display, 6, 76, 160));
+        result.setEdgeTo(new Color(display, 54, 29, 6));
+        result.setHighlightBottom(new Color(display, 110, 76, 45));
+        result.setHighlightInnerFrom(new Color(display, 110, 76, 45));
+        result.setHighlightInnerTo(new Color(display, 110, 76, 45));
+        result.setHighlightSpecular(new Color(display, 110, 76, 45));
+        result.setIndicatorInner(new Color(display, 133, 70, 14));
+        result.setIndicatorOuter(new Color(display, 54, 29, 6));
+        result.setPlateauInner(new Color(display, 133, 70, 14));
+        result.setPlateauOuter(new Color(display, 54, 29, 6));
+        result.setShadow(new Color(display, 54, 29, 6));
+        result.setTick(new Color(display, 80, 55, 32));
+        return result;
+    }
+
+    /**
+     * Creates a default profile
+     * @param display
+     * @return
+     */
+    public static KnobColorProfile createDefaultBlueRedProfile(Display display) {
         KnobColorProfile result = new KnobColorProfile();
         result.setBackground(new Color(display, 190, 190, 190));
         result.setBorder(new Color(display, 0, 0, 0));
@@ -445,7 +509,7 @@ public class KnobColorProfile {
      * @param display
      * @return
      */
-    public static KnobColorProfile createFocusedProfile(Display display) {
+    public static KnobColorProfile createFocusedBlueRedProfile(Display display) {
         KnobColorProfile result = new KnobColorProfile();
         result.setBackground(new Color(display, 190, 190, 190));
         result.setBorder(new Color(display, 0, 0, 0));
