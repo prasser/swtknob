@@ -18,129 +18,105 @@
 package de.linearbits.swt.widgets;
 
 /**
- * A language profile for the input dialog. Will return
- * begin+decimal|integer+range+end
+ * A language profile for the input dialog.
  * 
  * @author Fabian Prasser
  */
 public class KnobLanguageProfile {
-
-    /** Please enter*/
-    private String begin = "Please enter";
-    /**a decimal*/
-    private String decimal = "a decimal";
-    /**end of sentence*/
-    private String end = "";
-    /**an integer*/
-    private String integer = "an integer";
-    /**in range*/
-    private String range = "in range";
-    /** Input Dialog*/
+    
+    /** Message*/
+    private String message = "Please enter a [type] in range [range]:";
+    /** Title*/
     private String title = "Input Dialog";
+    /** Integer*/
+    private String integer = "integer";
+    /** Decimal*/
+    private String decimal = "decimal";
     
     /**
-     * In English: 'Please enter'
+     * Returns the message. "[type]" will be replaced by a text for the datatype, defined
+     * via setDecimal() and setInteger(), and "[range]" will be replaced by the range.
+     * Default is:  "Please enter a [type] in range [range]:"
      * @return
      */
-    public String getBegin() {
-        return begin;
+    public String getMessage() {
+        return message;
     }
+
     /**
-     * In English: 'a decimal'
+     * Sets the message. "[type]" will be replaced by a text for the datatype, defined
+     * via setDecimal() and setInteger(), and "[range]" will be replaced by the range.
+     * Default is:  "Please enter a [type] in range [range]:"
      * @return
      */
-    public String getDecimal() {
-        return decimal;
+    public void setMessage(String value) {
+        if (value == null) throw new NullPointerException("Argument is null");
+        this.message = value;
     }
+
     /**
-     * In English: ':'
-     * @return
-     */
-    public String getEnd() {
-        return end;
-    }
-    /**
-     * In English: 'an integer'
-     * @return
-     */
-    public String getInteger() {
-        return integer;
-    }
-    /**
-     * In English: 'in range'
-     * @return
-     */
-    public String getRange() {
-        return range;
-    }
-    /**
-     * In English: 'Input Dialog'
+     * Returns the title of the dialog
      * @return
      */
     public String getTitle() {
         return title;
     }
-    
 
     /**
-     * In English: 'Please enter'
-     * @param text
+     * Sets the title of the dialog. Default is: "Input Dialog"
+     * @param title
      */
-    public void setBegin(String text) {
-        this.begin = text;
-    }
-    
-    /**
-     * In English: 'a decimal'
-     * @param text
-     */
-    public void setDecimal(String text) {
-        this.decimal = text;
-    }
-    
-    /**
-     * In English: ':'
-     * @param text
-     */
-    public void setEnd(String text) {
-        this.end = text;
-    }
-    
-    /**
-     * In English: 'an integer'
-     * @param text
-     */
-    public void setInteger(String text) {
-        this.integer = text;
+    public void setTitle(String value) {
+        if (value == null) throw new NullPointerException("Argument is null");
+        this.title = value;
     }
 
     /**
-     * In English: 'in range'
-     * @param text
+     * Returns the text for the integer datatype. Default is: "integer"
+     * @return
      */
-    public void setRange(String text) {
-        this.range = text;
+    public String getInteger() {
+        return integer;
     }
 
+
     /**
-     * In English: 'Input Dialog'
-     * @param text
+     * Sets the text for the integer datatype. Default is: "integer"
+     * @return
      */
-    public void setTitle(String text) {
-        this.title = text;
+    public void setInteger(String value) {
+        if (value == null) throw new NullPointerException("Argument is null");
+        this.integer = value;
     }
-    
+
+
+    /**
+     * Returns the text for the decimal datatype. Default is: "decimal"
+     * @return
+     */
+    public String getDecimal() {
+        return decimal;
+    }
+
+
+    /**
+     * Sets the text for the decimal datatype. Default is: "decimal"
+     * @return
+     */
+    public void setDecimal(String value) {
+        if (value == null) throw new NullPointerException("Argument is null");
+        this.decimal = value;
+    }
+
     /**
      * Checks the settings
      */
     public void check(){
 
-        if (begin==null) throw new NullPointerException("Text for 'begin' not specified");
-        if (decimal==null) throw new NullPointerException("Text for 'begin' not specified");
-        if (end==null) throw new NullPointerException("Text for 'begin' not specified");
-        if (integer==null) throw new NullPointerException("Text for 'begin' not specified");
-        if (range==null) throw new NullPointerException("Text for 'begin' not specified");
-        if (title==null) throw new NullPointerException("Text for 'begin' not specified");
+        if (decimal==null) throw new NullPointerException("Text for 'decimal' not specified");
+        if (integer==null) throw new NullPointerException("Text for 'integer' not specified");
+        if (message==null) throw new NullPointerException("Text for 'message' not specified");
+        if (title==null) throw new NullPointerException("Text for 'title' not specified");
     }
     
     /**
@@ -157,12 +133,10 @@ public class KnobLanguageProfile {
      */
     public static KnobLanguageProfile createGermanProfile(){
         KnobLanguageProfile profile = new KnobLanguageProfile();
-        profile.setBegin("Bitte geben Sie");
-        profile.setInteger("eine Ganzzahl");
-        profile.setInteger("eine Gleitkommazahl");
-        profile.setInteger("im Bereich");
-        profile.setEnd("ein");
-        profile.setTitle("Eingabedialog");
+        profile.setMessage("Bitte geben Sie eine [type] im Bereich [range] ein:");
+        profile.setInteger("Ganzzahl");
+        profile.setDecimal("Gleitkommazahl");
+        profile.setTitle("Eingabemaske");
         return profile;
     }
 }

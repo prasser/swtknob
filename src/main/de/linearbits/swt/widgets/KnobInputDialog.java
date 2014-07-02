@@ -57,18 +57,14 @@ class KnobInputDialog<T> extends Dialog {
     public KnobInputDialog(Shell parent, KnobLanguageProfile language, KnobScale<T> scale, T value) {
         super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         setText(language.getTitle());
-        String message = language.getBegin()+ " ";
-        if ((scale instanceof KnobScale.Character)||(scale instanceof KnobScale.Long)|| (scale instanceof KnobScale.Integer)){
-            message += language.getInteger()+ " ";
+        String message = language.getMessage();
+        if ((scale instanceof KnobScale.Character) || (scale instanceof KnobScale.Long) ||
+            (scale instanceof KnobScale.Integer)) {
+            message.replace("[type]", language.getInteger());
         } else {
-            message += language.getDecimal()+ " ";
+            message.replace("[type]", language.getDecimal());
         }
-        message += language.getRange() + " [";
-        message += scale.getMinimum();
-        message +=", ";
-        message += scale.getMaximum();
-        message += "] ";
-        message += language.getEnd();
+        message.replace("[range]", "[" + scale.getMinimum() + ", " + scale.getMaximum() + "] ");
         this.message = message;
         this.scale = scale;
         this.value = value;
