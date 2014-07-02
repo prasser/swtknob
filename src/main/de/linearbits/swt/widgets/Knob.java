@@ -60,7 +60,7 @@ import org.eclipse.swt.widgets.Listener;
 public class Knob<T> extends Canvas {
 
     /** Design */
-    private static final int        CUT_OFF       = 60;
+    private static final int        CUT_OFF       = 90;
     /** Design */
     private static final int        SCALE_DOWN    = 20;
     
@@ -537,7 +537,7 @@ public class Knob<T> extends Canvas {
         double outer = min * 0.1d;
         double plateau = min * 0.075d;
         double indicatorWidth = min / 20d;
-        double focusWidth = indicatorWidth / 2d;
+        double focusWidth = indicatorWidth / 1.5d;
         if (indicatorWidth < 1d) indicatorWidth = 1d;
         double tickWidth = indicatorWidth / 3d;
         if (tickWidth < 1d) tickWidth = 1d;
@@ -664,15 +664,10 @@ public class Knob<T> extends Canvas {
         // Draw the ticks
         gc.setForeground(black);
         gc.setBackground(black);
+        gc.setLineCap(SWT.CAP_FLAT);
+        gc.setLineWidth(iTickWidth);
         for (int i = 0; i < ticks11.size(); i++) {
             Point p1 = ticks11.get(i);
-            if (i==0 || i == ticks11.size()-1) {
-                gc.setLineCap(SWT.CAP_ROUND);
-                gc.setLineWidth(iIndicatorWidth);
-            } else {
-                gc.setLineCap(SWT.CAP_FLAT);
-                gc.setLineWidth(iTickWidth);
-            }
             gc.drawLine(p1.x, p1.y, iCenterX, iCenterY);
         }
 
