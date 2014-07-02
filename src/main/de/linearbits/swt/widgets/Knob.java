@@ -60,10 +60,10 @@ import org.eclipse.swt.widgets.Listener;
 public class Knob<T> extends Canvas {
 
     /** Design */
-    private static final int        CUT_OFF       = 90;
+    private static final int CUT_OFF    = 90;
     /** Design */
-    private static final int        SCALE_DOWN    = 20;
-    
+    private static final int SCALE_DOWN = 20;
+
     /**
      * Checks the style
      * 
@@ -72,47 +72,50 @@ public class Knob<T> extends Canvas {
     private static int checkStyle(int style) {
         return style;
     }
-    
+
     /** Design */
-    private final Cursor            defaultCursor = getDefaultCursor();
+    private final Cursor            defaultCursor     = getDefaultCursor();
     /** Design */
-    private final Cursor            hiddenCursor  = getHiddenCursor();
+    private final Cursor            hiddenCursor      = getHiddenCursor();
+
+    /** Language profile*/
+    private KnobLanguageProfile     language          = KnobLanguageProfile.createEnglishProfile();
 
     /** Default color profile*/
     private final KnobColorProfile  standardDefaultProfile;
     /** Focused color profile*/
     private final KnobColorProfile  standardFocusedProfile;
     /** Default color profile*/
-    private KnobColorProfile  defaultProfile;
+    private KnobColorProfile        defaultProfile;
     /** Focused color profile*/
-    private KnobColorProfile  focusedProfile;
+    private KnobColorProfile        focusedProfile;
     /** Pre-rendered default background */
     private Image                   defaultBackground = null;
     /** Pre-rendered focused background */
     private Image                   focusedBackground = null;
-    
+
     /** Dragging */
-    private boolean                 drag          = false;
+    private boolean                 drag              = false;
     /** Dragging */
-    private int                     dragY         = 0;
+    private int                     dragY             = 0;
     /** Dragging */
-    private int                     dragOffset    = 0;
+    private int                     dragOffset        = 0;
     /** Dragging */
-    private int                     screenX       = 0;
+    private int                     screenX           = 0;
     /** Dragging */
-    private int                     screenY       = 0;
+    private int                     screenY           = 0;
     /** Dragging */
-    private double                  dragValue     = 0;
+    private double                  dragValue         = 0;
     /** Dragging */
-    private double                  sensitivity   = 200d;
-    
+    private double                  sensitivity       = 200d;
+
     /** Value handling */
-    private double                  value         = 0d;
+    private double                  value             = 0d;
     /** Value handling */
-    private KnobScale<T>            scale         = null;
+    private KnobScale<T>            scale             = null;
 
     /** Listeners */
-    private List<SelectionListener> listeners     = new ArrayList<SelectionListener>();
+    private List<SelectionListener> listeners         = new ArrayList<SelectionListener>();
 
     /**
      * Creates a new instance
@@ -366,6 +369,23 @@ public class Knob<T> extends Canvas {
                     drag = false;
                     getDisplay().setCursorLocation(screenX, screenY);
                     Knob.this.setCursor(defaultCursor);
+                }
+            }
+
+            @Override
+            public void mouseDoubleClick(MouseEvent arg0) {
+                
+                if (drag) {
+                    drag = false;
+                    getDisplay().setCursorLocation(screenX, screenY);
+                    Knob.this.setCursor(defaultCursor);
+                }
+                
+                KnobInputDialog<T> dialog = new KnobInputDialog<T>(getShell(), language, scale, scale.toExternal(value));
+                T result = dialog.open();
+                if (result != null) {
+                    value = scale.toInternal(result);
+                    redraw();
                 }
             }
         };
