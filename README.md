@@ -9,11 +9,11 @@ screen space.
 Introduction
 ------
 
-The knob is rotated by clicking and dragging the mouse up or down. While the knob's selection
+A knob is rotated by clicking and dragging the mouse up or down. While a knob's selection
 is changed the mouse is hidden. It re-appears when then mouse button is released. This is similar
 to the behavior often implemented in audio editing software.
 
-SWTKnob currently supports ranges for all primitive Java data type:
+SWTKnob currently supports ranges for all primitive Java data types:
 * KnobRange.Double(0d, 1d);
 * KnobRange.Float(0f, 1f);
 * KnobRange.Long(0l, 100l);
@@ -21,7 +21,7 @@ SWTKnob currently supports ranges for all primitive Java data type:
 * KnobRange.Character(0, 100);
 
 When instantiated with a range for Longs, Integers or Chars and when the range between
-the defined minimum and maximum is small enough, the knob will display ticks reflecting the
+the defined minimum and maximum is small enough, a knob will display ticks reflecting the
 range and the indicator will snap to these ticks. A knob's value can be changed and retrieved 
 via getters and setters, and a SelectionListener can be attached. A knob's sensitivity can be 
 adjusted by calling Knob.setSensitivity(). The default value is 200.
