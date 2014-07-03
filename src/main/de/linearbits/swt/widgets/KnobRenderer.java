@@ -50,9 +50,16 @@ import org.eclipse.swt.widgets.Display;
 class KnobRenderer {
 
     /**
+     * Converts the byte to a float between 0 and 1
+     * @param value
+     * @return
+     */
+    private float byteToFloat(int value){
+        return (float)Math.round((double)value / 255d);
+    }
+
+    /**
      * JFreeChart : a free chart library for the Java(tm) platform
-     * 
-     * 
      * (C) Copyright 2000-2007, by Object Refinery Limited and Contributors.
      * 
      * Project Info: http://www.jfree.org/jfreechart/index.html
@@ -71,25 +78,9 @@ class KnobRenderer {
      * along with this library; if not, write to the Free Software Foundation,
      * Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
      * 
-     * [Java is a trademark or registered trademark of Sun Microsystems, Inc. in
-     * the United States and other countries.]
-     * 
-     * ------------- SWTUtils.java ------------- (C) Copyright 2006, 2007, by
-     * Henry Proudhon and Contributors.
-     * 
      * Original Author: Henry Proudhon (henry.proudhon AT ensmp.fr);
      * Contributor(s): Rainer Blessing; David Gilbert
      * (david.gilbert@object-refinery.com); Christoph Beck.
-     * 
-     * Changes ------- 01-Aug-2006 : New class (HP); 16-Jan-2007 : Use
-     * FontData.getHeight() instead of direct field access (RB); 31-Jan-2007 :
-     * Moved the dummy JPanel from SWTGraphics2D.java, added a new convert
-     * method for mouse events (HP); 12-Jul-2007 : Improved the mouse event
-     * conversion with buttons and modifiers handling, patch sent by Christoph
-     * Beck (HP); 27-Aug-2007 : Modified toAwtMouseEvent signature (HP);
-     * 27-Nov-2007 : Moved convertToSWT() method from SWTGraphics2D and added
-     * convertAWTImageToSWT() (DG); 01-Jul-2008 : Simplify AWT/SWT font style
-     * conversions (HP);
      * 
      */
     private ImageData convertToSWT(BufferedImage bufferedImage) {
@@ -268,7 +259,7 @@ class KnobRenderer {
         // Restores the previous state
         g2.setPaint(oldPaint);
     }
-
+    
     /**
      * Renders a knob with the given width and height
      * 
@@ -286,14 +277,5 @@ class KnobRenderer {
         ImageData data = convertToSWT(image);
         data.transparentPixel = data.palette.getPixel(transparent.getRGB());
         return new Image(display, data);
-    }
-    
-    /**
-     * Converts the byte to a float between 0 and 1
-     * @param value
-     * @return
-     */
-    private float byteToFloat(int value){
-        return (float)Math.round((double)value / 255d);
     }
 }

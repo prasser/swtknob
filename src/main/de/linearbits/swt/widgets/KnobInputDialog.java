@@ -54,17 +54,17 @@ class KnobInputDialog<T> extends Dialog {
      * @param scale
      * @param value
      */
-    public KnobInputDialog(Shell parent, KnobLanguageProfile language, KnobScale<T> scale, T value) {
+    public KnobInputDialog(Shell parent, KnobDialogProfile language, KnobScale<T> scale, T value) {
         super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         setText(language.getTitle());
         String message = language.getMessage();
         if ((scale instanceof KnobScale.Character) || (scale instanceof KnobScale.Long) ||
             (scale instanceof KnobScale.Integer)) {
-            message.replace("[type]", language.getInteger());
+            message = message.replace("[type]", language.getInteger());
         } else {
-            message.replace("[type]", language.getDecimal());
+            message = message.replace("[type]", language.getDecimal());
         }
-        message.replace("[range]", "[" + scale.getMinimum() + ", " + scale.getMaximum() + "] ");
+        message = message.replace("[range]", "[" + scale.getMinimum() + ", " + scale.getMaximum() + "]");
         this.message = message;
         this.scale = scale;
         this.value = value;
@@ -88,56 +88,6 @@ class KnobInputDialog<T> extends Dialog {
         }
         if (input == null) return null;
         else return getValue(input);
-    }
-
-    @SuppressWarnings("unchecked")
-    private T getValue(String input) {
-        
-        try {
-            if (scale instanceof KnobScale.Long){
-                
-                long min = ((KnobScale.Long)scale).getMinimum();
-                long max = ((KnobScale.Long)scale).getMaximum();
-                long value = Long.valueOf(input);
-                if (value < min || value > max) return null;
-                else return (T)Long.valueOf(value);
-                
-            } else if (scale instanceof KnobScale.Integer){
-                
-                int min = ((KnobScale.Integer)scale).getMinimum();
-                int max = ((KnobScale.Integer)scale).getMaximum();
-                int value = Integer.valueOf(input);
-                if (value < min || value > max) return null;
-                else return (T)Integer.valueOf(value);
-                
-            } else if (scale instanceof KnobScale.Character){
-                
-                char min = ((KnobScale.Character)scale).getMinimum();
-                char max = ((KnobScale.Character)scale).getMaximum();
-                char value = (char)Integer.valueOf(input).intValue();
-                if (value < min || value > max) return null;
-                else return (T)Character.valueOf(value);
-                
-            } else if (scale instanceof KnobScale.Float){
-                
-                float min = ((KnobScale.Float)scale).getMinimum();
-                float max = ((KnobScale.Float)scale).getMaximum();
-                float value = Float.valueOf(input);
-                if (value < min || value > max) return null;
-                else return (T)Float.valueOf(value);
-                
-            } else if (scale instanceof KnobScale.Double){
-                
-                double min = ((KnobScale.Double)scale).getMinimum();
-                double max = ((KnobScale.Double)scale).getMaximum();
-                double value = Double.valueOf(input);
-                if (value < min || value > max) return null;
-                else return (T)Double.valueOf(value);
-            } 
-        } catch (Exception e){
-            /* Catch silently*/
-        }
-        return null;
     }
 
     /**
@@ -193,5 +143,55 @@ class KnobInputDialog<T> extends Dialog {
         });
 
         shell.setDefaultButton(ok);
+    }
+
+    @SuppressWarnings("unchecked")
+    private T getValue(String input) {
+        
+        try {
+            if (scale instanceof KnobScale.Long){
+                
+                long min = ((KnobScale.Long)scale).getMinimum();
+                long max = ((KnobScale.Long)scale).getMaximum();
+                long value = Long.valueOf(input);
+                if (value < min || value > max) return null;
+                else return (T)Long.valueOf(value);
+                
+            } else if (scale instanceof KnobScale.Integer){
+                
+                int min = ((KnobScale.Integer)scale).getMinimum();
+                int max = ((KnobScale.Integer)scale).getMaximum();
+                int value = Integer.valueOf(input);
+                if (value < min || value > max) return null;
+                else return (T)Integer.valueOf(value);
+                
+            } else if (scale instanceof KnobScale.Character){
+                
+                char min = ((KnobScale.Character)scale).getMinimum();
+                char max = ((KnobScale.Character)scale).getMaximum();
+                char value = (char)Integer.valueOf(input).intValue();
+                if (value < min || value > max) return null;
+                else return (T)Character.valueOf(value);
+                
+            } else if (scale instanceof KnobScale.Float){
+                
+                float min = ((KnobScale.Float)scale).getMinimum();
+                float max = ((KnobScale.Float)scale).getMaximum();
+                float value = Float.valueOf(input);
+                if (value < min || value > max) return null;
+                else return (T)Float.valueOf(value);
+                
+            } else if (scale instanceof KnobScale.Double){
+                
+                double min = ((KnobScale.Double)scale).getMinimum();
+                double max = ((KnobScale.Double)scale).getMaximum();
+                double value = Double.valueOf(input);
+                if (value < min || value > max) return null;
+                else return (T)Double.valueOf(value);
+            } 
+        } catch (Exception e){
+            /* Catch silently*/
+        }
+        return null;
     }
 }

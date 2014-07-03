@@ -79,7 +79,7 @@ public class Knob<T> extends Canvas {
     private final Cursor            hiddenCursor      = getHiddenCursor();
 
     /** Language profile*/
-    private KnobLanguageProfile     language          = KnobLanguageProfile.createEnglishProfile();
+    private KnobDialogProfile       dialogProfile     = KnobDialogProfile.createEnglishProfile();
 
     /** Default color profile*/
     private final KnobColorProfile  standardDefaultProfile;
@@ -186,6 +186,18 @@ public class Knob<T> extends Canvas {
         this.listeners.remove(listener);
     }
 
+    @Override
+    public void setBackground(Color arg0) {
+        super.setBackground(arg0);
+        checkWidget();
+        if (defaultBackground != null) defaultBackground.dispose();
+        if (focusedBackground != null) focusedBackground.dispose();
+        defaultBackground = null;
+        focusedBackground = null;
+        redraw();
+    }
+
+
     /**
      * Sets the default color profile
      */
@@ -197,27 +209,25 @@ public class Knob<T> extends Canvas {
         defaultBackground = null;
         redraw();
     }
-
+    
+    /**
+     * Sets the dialog language profile
+     * @param profile
+     */
+    public void setDialogProfile(KnobDialogProfile profile){
+        checkWidget();
+        profile.check();
+        this.dialogProfile = profile;
+    }
 
     /**
-     * Sets the default focused profile
+     * Sets the default focused color profile
      */
     public void setFocusedColorProfile(KnobColorProfile profile) {
         checkWidget();
         profile.check();
         this.focusedProfile = profile;
         if (focusedBackground != null) focusedBackground.dispose();
-        focusedBackground = null;
-        redraw();
-    }
-
-    @Override
-    public void setBackground(Color arg0) {
-        super.setBackground(arg0);
-        checkWidget();
-        if (defaultBackground != null) defaultBackground.dispose();
-        if (focusedBackground != null) focusedBackground.dispose();
-        defaultBackground = null;
         focusedBackground = null;
         redraw();
     }
@@ -351,6 +361,23 @@ public class Knob<T> extends Canvas {
     private MouseAdapter createMouseButtonHandler() {
         return new MouseAdapter() {
             @Override
+            public void mouseDoubleClick(MouseEvent arg0) {
+                
+                if (drag) {
+                    drag = false;
+                    getDisplay().setCursorLocation(screenX, screenY);
+                    Knob.this.setCursor(defaultCursor);
+                }
+                
+                KnobInputDialog<T> dialog = new KnobInputDialog<T>(getShell(), dialogProfile, scale, scale.toExternal(value));
+                T result = dialog.open();
+                if (result != null) {
+                    value = scale.toInternal(result);
+                    redraw();
+                }
+            }
+
+            @Override
             public void mouseDown(MouseEvent arg0) {
                 dragY = arg0.y;
                 Point point = Knob.this.toDisplay(arg0.x, arg0.y);
@@ -369,23 +396,6 @@ public class Knob<T> extends Canvas {
                     drag = false;
                     getDisplay().setCursorLocation(screenX, screenY);
                     Knob.this.setCursor(defaultCursor);
-                }
-            }
-
-            @Override
-            public void mouseDoubleClick(MouseEvent arg0) {
-                
-                if (drag) {
-                    drag = false;
-                    getDisplay().setCursorLocation(screenX, screenY);
-                    Knob.this.setCursor(defaultCursor);
-                }
-                
-                KnobInputDialog<T> dialog = new KnobInputDialog<T>(getShell(), language, scale, scale.toExternal(value));
-                T result = dialog.open();
-                if (result != null) {
-                    value = scale.toInternal(result);
-                    redraw();
                 }
             }
         };
