@@ -32,7 +32,7 @@ Accessibility
 ------
 SWTKnob supports keyboard navigation (e.g. via shell.setTabList(...)). Moreover, a knob can also be controlled with the
 keyboard. When focused, the keys '0', '1', '2', ..., '9' set a knob's value to 0%, 10%, 20%, ..., 90% of the current range. 
-The keys '+' and '-' increase and decrease the value by 10%. Up and down keys increase and decrease the value according to 
+The keys '+' and '-' increase and decrease its value by 10%. Up and down keys increase and decrease its value according to 
 the defined sensitivity. When a knob is double-clicked, a dialog is shown that allows to enter a value with they keyboard. 
 
 Customization
