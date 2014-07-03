@@ -60,7 +60,7 @@ profile.setTitle("Eingabemaske");
 ```
 
 The string "[type]" will be replaced by the type of range (i.e., integer or decimal) and the string "[range]" 
-will be replaced by a representation of the current range.
+will be replaced by "[minimum, maximum]".
 
 Example
 ------
