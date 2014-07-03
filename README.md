@@ -46,7 +46,7 @@ knob.setFocusedColorProfile(focusedProfile);
 ```
 
 A profile for the input dialog can be used to display messages specific to the semantics of a knob's value, or for
-internationalization, i.e., displaying messages in different languages. For example, a german language profile
+internationalization, i.e., displaying messages in different languages. For example, a German language profile
 can be created as follows:
 
 ```Java
@@ -63,9 +63,8 @@ will be replaced by a representation of the current range.
 Example
 ------
 
-In the following example, a knob is created with an integer scale for values in the
-range [20,60]. When the knob's selection is changed, the current value is displayed
-in a label.
+In the following example, a knob is created for integers in the range [20,60]. 
+When the knob's selection is changed, the current value is displayed in a label.
 
 ```Java
 // Create Knob
