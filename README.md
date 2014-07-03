@@ -6,6 +6,8 @@ This project implements a Knob widget for the Standard Widget Toolkit (SWT).
 A knob provides functionalities similar to a SWT Slider or a SWT Scale while occupying much less
 screen space.
 
+[![Screenshot-2](https://raw.github.com/prasser/swtknob/master/img/screenshot2.png)](https://raw.github.com/prasser/swtknob/master/img/screenshot2.png)
+
 Introduction
 ------
 
