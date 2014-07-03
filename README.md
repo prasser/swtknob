@@ -71,7 +71,7 @@ When the knob's selection is changed, the current value is displayed in a label.
 ```Java
 // Create Knob
 final Knob<Integer> knob = new Knob<Integer>(shell, SWT.NULL, 
-                                             new KnobScale.Integer(20,60));
+                                             new KnobRange.Integer(20,60));
 knob.setLayoutData(new GridData(GridData.FILL_BOTH));
 
 // Create Label
