@@ -43,7 +43,7 @@ class KnobInputDialog<T> extends Dialog {
     /** The input text*/
     private String input;
     /** The scale*/
-    private KnobScale<T> scale;
+    private KnobRange<T> scale;
     /** The value*/
     private T value;
     
@@ -54,12 +54,12 @@ class KnobInputDialog<T> extends Dialog {
      * @param scale
      * @param value
      */
-    public KnobInputDialog(Shell parent, KnobDialogProfile language, KnobScale<T> scale, T value) {
+    public KnobInputDialog(Shell parent, KnobDialogProfile language, KnobRange<T> scale, T value) {
         super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
         setText(language.getTitle());
         String message = language.getMessage();
-        if ((scale instanceof KnobScale.Character) || (scale instanceof KnobScale.Long) ||
-            (scale instanceof KnobScale.Integer)) {
+        if ((scale instanceof KnobRange.Character) || (scale instanceof KnobRange.Long) ||
+            (scale instanceof KnobRange.Integer)) {
             message = message.replace("[type]", language.getInteger());
         } else {
             message = message.replace("[type]", language.getDecimal());
@@ -149,42 +149,42 @@ class KnobInputDialog<T> extends Dialog {
     private T getValue(String input) {
         
         try {
-            if (scale instanceof KnobScale.Long){
+            if (scale instanceof KnobRange.Long){
                 
-                long min = ((KnobScale.Long)scale).getMinimum();
-                long max = ((KnobScale.Long)scale).getMaximum();
+                long min = ((KnobRange.Long)scale).getMinimum();
+                long max = ((KnobRange.Long)scale).getMaximum();
                 long value = Long.valueOf(input);
                 if (value < min || value > max) return null;
                 else return (T)Long.valueOf(value);
                 
-            } else if (scale instanceof KnobScale.Integer){
+            } else if (scale instanceof KnobRange.Integer){
                 
-                int min = ((KnobScale.Integer)scale).getMinimum();
-                int max = ((KnobScale.Integer)scale).getMaximum();
+                int min = ((KnobRange.Integer)scale).getMinimum();
+                int max = ((KnobRange.Integer)scale).getMaximum();
                 int value = Integer.valueOf(input);
                 if (value < min || value > max) return null;
                 else return (T)Integer.valueOf(value);
                 
-            } else if (scale instanceof KnobScale.Character){
+            } else if (scale instanceof KnobRange.Character){
                 
-                char min = ((KnobScale.Character)scale).getMinimum();
-                char max = ((KnobScale.Character)scale).getMaximum();
+                char min = ((KnobRange.Character)scale).getMinimum();
+                char max = ((KnobRange.Character)scale).getMaximum();
                 char value = (char)Integer.valueOf(input).intValue();
                 if (value < min || value > max) return null;
                 else return (T)Character.valueOf(value);
                 
-            } else if (scale instanceof KnobScale.Float){
+            } else if (scale instanceof KnobRange.Float){
                 
-                float min = ((KnobScale.Float)scale).getMinimum();
-                float max = ((KnobScale.Float)scale).getMaximum();
+                float min = ((KnobRange.Float)scale).getMinimum();
+                float max = ((KnobRange.Float)scale).getMaximum();
                 float value = Float.valueOf(input);
                 if (value < min || value > max) return null;
                 else return (T)Float.valueOf(value);
                 
-            } else if (scale instanceof KnobScale.Double){
+            } else if (scale instanceof KnobRange.Double){
                 
-                double min = ((KnobScale.Double)scale).getMinimum();
-                double max = ((KnobScale.Double)scale).getMaximum();
+                double min = ((KnobRange.Double)scale).getMinimum();
+                double max = ((KnobRange.Double)scale).getMaximum();
                 double value = Double.valueOf(input);
                 if (value < min || value > max) return null;
                 else return (T)Double.valueOf(value);

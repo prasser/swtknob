@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.linearbits.swt.widgets.Knob;
 import de.linearbits.swt.widgets.KnobColorProfile;
-import de.linearbits.swt.widgets.KnobScale;
+import de.linearbits.swt.widgets.KnobRange;
 
 /**
  * A class with examples for using SWTKnob
@@ -54,7 +54,7 @@ public class Example3 {
         KnobColorProfile focusedProfile = KnobColorProfile.createFocusedBlueRedProfile(display);
 
         // Create Knob
-        final Knob<Long> knob1 = new Knob<Long>(shell, SWT.NULL, new KnobScale.Long(1l, 20l));
+        final Knob<Long> knob1 = new Knob<Long>(shell, SWT.NULL, new KnobRange.Long(1l, 20l));
         GridData data1 = new GridData();
         data1.heightHint = 50;
         data1.widthHint = 50;
@@ -63,7 +63,7 @@ public class Example3 {
         knob1.setFocusedColorProfile(focusedProfile);
         
         // Create Knob
-        Knob<Long> knob2 = new Knob<Long>(shell, SWT.NULL, new KnobScale.Long(1l, 20l));
+        Knob<Long> knob2 = new Knob<Long>(shell, SWT.NULL, new KnobRange.Long(1l, 20l));
         GridData data2 = new GridData();
         data2.heightHint = 50;
         data2.widthHint = 50;

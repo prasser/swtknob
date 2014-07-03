@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import de.linearbits.swt.widgets.Knob;
-import de.linearbits.swt.widgets.KnobScale;
+import de.linearbits.swt.widgets.KnobRange;
 
 /**
  * A class with examples for using SWTKnob
@@ -51,42 +51,42 @@ public class Example1 {
         shell.setLayout(new GridLayout(1, false));
 
         // Create Knob
-        Knob<Double> knob = new Knob<Double>(shell, SWT.NULL, new KnobScale.Double());
+        Knob<Double> knob = new Knob<Double>(shell, SWT.NULL, new KnobRange.Double());
         GridData data = new GridData();
         data.heightHint = 200;
         data.widthHint = 200;
         knob.setLayoutData(data);
 
         // Create Knob
-        final Knob<Integer> knob0 = new Knob<Integer>(shell, SWT.NULL, new KnobScale.Integer(1, 20));
+        final Knob<Integer> knob0 = new Knob<Integer>(shell, SWT.NULL, new KnobRange.Integer(1, 20));
         GridData data0 = new GridData();
         data0.heightHint = 100;
         data0.widthHint = 100;
         knob0.setLayoutData(data0);
 
         // Create Knob
-        final Knob<Long> knob1 = new Knob<Long>(shell, SWT.NULL, new KnobScale.Long(1l, 20l));
+        final Knob<Long> knob1 = new Knob<Long>(shell, SWT.NULL, new KnobRange.Long(1l, 20l));
         GridData data1 = new GridData();
         data1.heightHint = 50;
         data1.widthHint = 50;
         knob1.setLayoutData(data1);
         
         // Create Knob
-        Knob<Character> knob2 = new Knob<Character>(shell, SWT.NULL, new KnobScale.Character());
+        Knob<Character> knob2 = new Knob<Character>(shell, SWT.NULL, new KnobRange.Character());
         GridData data2 = new GridData();
         data2.heightHint = 30;
         data2.widthHint = 30;
         knob2.setLayoutData(data2);
 
         // Create Knob
-        Knob<Float> knob3 = new Knob<Float>(shell, SWT.NULL, new KnobScale.Float());
+        Knob<Float> knob3 = new Knob<Float>(shell, SWT.NULL, new KnobRange.Float());
         GridData data3 = new GridData();
         data3.heightHint = 23;
         data3.widthHint = 23;
         knob3.setLayoutData(data3);
 
         // Create Knob
-        Knob<Integer> knob4 = new Knob<Integer>(shell, SWT.NULL, new KnobScale.Integer());
+        Knob<Integer> knob4 = new Knob<Integer>(shell, SWT.NULL, new KnobRange.Integer());
         GridData data4 = new GridData();
         data4.heightHint = 10;
         data4.widthHint = 10;

@@ -18,19 +18,19 @@
 package de.linearbits.swt.widgets;
 
 /**
- * A scale for SWTKnob
+ * A range for SWTKnob
  * @author Fabian Prasser
  *
  * @param <T>
  */
-public abstract class KnobScale<T> {
+public abstract class KnobRange<T> {
 
     /**
-     * A char scale
+     * A char range
      * 
      * @author Fabian Prasser
      */
-    public static class Character extends KnobScale<java.lang.Character> {
+    public static class Character extends KnobRange<java.lang.Character> {
 
         /**
          * Default constructor. Range is Character.MIN_VALUE -
@@ -83,11 +83,11 @@ public abstract class KnobScale<T> {
         }
     }
     /**
-     * A double scale
+     * A double range
      * 
      * @author Fabian Prasser
      */
-    public static class Double extends KnobScale<java.lang.Double> {
+    public static class Double extends KnobRange<java.lang.Double> {
 
         /**
          * Default constructor. Range is Double.MIN_VALUE - Double.MAX_VALUE
@@ -139,11 +139,11 @@ public abstract class KnobScale<T> {
     }
 
     /**
-     * A float scale
+     * A float range
      * 
      * @author Fabian Prasser
      */
-    public static class Float extends KnobScale<java.lang.Float> {
+    public static class Float extends KnobRange<java.lang.Float> {
 
         /**
          * Default constructor. Range is Float.MIN_VALUE - Float.MAX_VALUE
@@ -195,11 +195,11 @@ public abstract class KnobScale<T> {
     }
 
     /**
-     * An integer scale
+     * An integer range
      * 
      * @author Fabian Prasser
      */
-    public static class Integer extends KnobScale<java.lang.Integer> {
+    public static class Integer extends KnobRange<java.lang.Integer> {
 
         /**
          * Default constructor. Range is Integer.MIN_VALUE - Integer.MAX_VALUE
@@ -252,11 +252,11 @@ public abstract class KnobScale<T> {
     }
 
     /**
-     * A long scale
+     * A long range
      * 
      * @author Fabian Prasser
      */
-    public static class Long extends KnobScale<java.lang.Long> {
+    public static class Long extends KnobRange<java.lang.Long> {
 
         /**
          * Default constructor. Range is Long.MIN_VALUE - Long.MAX_VALUE
@@ -316,11 +316,11 @@ public abstract class KnobScale<T> {
     protected final T maximum;
 
     /** 
-     * Creates a new scale
+     * Creates a new range
      * @param minimum
      * @param maximum
      */
-    protected KnobScale(T minimum, T maximum) {
+    protected KnobRange(T minimum, T maximum) {
         this.minimum = minimum;
         this.maximum = maximum;
     }

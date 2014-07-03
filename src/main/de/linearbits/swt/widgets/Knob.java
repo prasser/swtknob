@@ -112,7 +112,7 @@ public class Knob<T> extends Canvas {
     /** Value handling */
     private double                  value             = 0d;
     /** Value handling */
-    private KnobScale<T>            scale             = null;
+    private KnobRange<T>            range             = null;
 
     /** Listeners */
     private List<SelectionListener> listeners         = new ArrayList<SelectionListener>();
@@ -124,12 +124,12 @@ public class Knob<T> extends Canvas {
      * @param style
      * @param scale
      */
-    public Knob(Composite parent, int style, KnobScale<T> scale) {
+    public Knob(Composite parent, int style, KnobRange<T> scale) {
 
         super(parent, checkStyle(style) | SWT.DOUBLE_BUFFERED);
 
         // Init
-        this.scale = scale;
+        this.range = scale;
         this.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
         this.standardDefaultProfile = KnobColorProfile.createDefaultSystemProfile(parent.getDisplay());
         this.standardFocusedProfile = KnobColorProfile.createFocusedSystemProfile(parent.getDisplay());
@@ -162,9 +162,9 @@ public class Knob<T> extends Canvas {
      * 
      * @return
      */
-    public KnobScale<T> getScale() {
+    public KnobRange<T> getRange() {
         checkWidget();
-        return this.scale;
+        return this.range;
     }
 
     /**
@@ -174,7 +174,7 @@ public class Knob<T> extends Canvas {
      */
     public T getValue() {
         checkWidget();
-        return this.scale.toExternal(value);
+        return this.range.toExternal(value);
     }
 
     /**
@@ -233,13 +233,13 @@ public class Knob<T> extends Canvas {
     }
 
     /**
-     * Sets the scale. This resets the knob.
+     * Sets the range. This resets the knob.
      * 
-     * @param scale
+     * @param range
      */
-    public void setScale(KnobScale<T> scale) {
+    public void setRange(KnobRange<T> range) {
         checkWidget();
-        this.scale = scale;
+        this.range = range;
         this.value = 0d;
         if (defaultBackground != null) defaultBackground.dispose();
         if (focusedBackground != null) focusedBackground.dispose();
@@ -267,7 +267,7 @@ public class Knob<T> extends Canvas {
      */
     public void setValue(T value) {
         checkWidget();
-        double val = this.scale.toInternal(value);
+        double val = this.range.toInternal(value);
         if (val != this.value) {
             this.value = val;
             this.redraw();
@@ -369,10 +369,10 @@ public class Knob<T> extends Canvas {
                     Knob.this.setCursor(defaultCursor);
                 }
                 
-                KnobInputDialog<T> dialog = new KnobInputDialog<T>(getShell(), dialogProfile, scale, scale.toExternal(value));
+                KnobInputDialog<T> dialog = new KnobInputDialog<T>(getShell(), dialogProfile, range, range.toExternal(value));
                 T result = dialog.open();
                 if (result != null) {
-                    value = scale.toInternal(result);
+                    value = range.toInternal(result);
                     redraw();
                 }
             }
@@ -496,7 +496,7 @@ public class Knob<T> extends Canvas {
         event.widget = this;
         SelectionEvent sevent = new SelectionEvent(event);
         sevent.widget = this;
-        sevent.data = scale.toExternal(this.value);
+        sevent.data = range.toExternal(this.value);
         for (SelectionListener listener : listeners) {
             listener.widgetSelected(sevent);
             listener.widgetDefaultSelected(sevent);
@@ -632,7 +632,7 @@ public class Knob<T> extends Canvas {
         gc.fillOval(iCenterX - iPlateau, iCenterY - iPlateau, iPlateau * 2, iPlateau * 2);
 
         // Draw the value indicator
-        Point line = getLineCoordinates(iCenterX, iCenterY, iTick, scale.toNearestInternal(value));
+        Point line = getLineCoordinates(iCenterX, iCenterY, iTick, range.toNearestInternal(value));
         gc.setForeground(profile.getIndicatorOuter());
         gc.setForeground(profile.getIndicatorOuter());
         gc.setLineCap(SWT.CAP_ROUND);
@@ -668,7 +668,7 @@ public class Knob<T> extends Canvas {
         double outer = min * 0.1d;
         double plateau = min * 0.1d;
         double indicatorWidth = min / 20d;
-        double stepping = scale.getStepping();
+        double stepping = range.getStepping();
         if (indicatorWidth < 1d) indicatorWidth = 1d;
         double tickWidth = indicatorWidth / 3d;
         if (tickWidth < 1d) tickWidth = 1d;
@@ -699,10 +699,10 @@ public class Knob<T> extends Canvas {
 
             // Ticks matching scale
             for (double v = 0d; v <= 1d - stepping; v += stepping) {
-                double tick = scale.toNearestInternal(v);
+                double tick = range.toNearestInternal(v);
                 ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, tick));
             }
-            double tick = scale.toNearestInternal(1d);
+            double tick = range.toNearestInternal(1d);
             ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, tick));
 
         } else {

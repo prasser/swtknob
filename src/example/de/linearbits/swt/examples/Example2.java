@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import de.linearbits.swt.widgets.Knob;
-import de.linearbits.swt.widgets.KnobScale;
+import de.linearbits.swt.widgets.KnobRange;
 
 /**
  * A class with examples for using SWTKnob
@@ -51,7 +51,7 @@ public class Example2 {
         shell.setLayout(new GridLayout(1, false));
 
         // Create Knob
-        final Knob<Integer> knob = new Knob<Integer>(shell, SWT.NULL, new KnobScale.Integer(20,60));
+        final Knob<Integer> knob = new Knob<Integer>(shell, SWT.NULL, new KnobRange.Integer(20,60));
         knob.setLayoutData(new GridData(GridData.FILL_BOTH));
         
         // Create Label
