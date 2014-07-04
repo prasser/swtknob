@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
 
 import de.linearbits.swt.widgets.Knob;
-import de.linearbits.swt.widgets.KnobColorProfile;
 import de.linearbits.swt.widgets.KnobRange;
 
 /**
@@ -69,10 +68,7 @@ public class Example4 {
 		item1.setControl(group);
 		
         // Create Knob
-        Knob<Double> knob = new Knob<Double>(group, SWT.NULL, new KnobRange.Double(0d, 10d));
-        knob.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
-
+        new Knob<Integer>(group, SWT.NULL, new KnobRange.Integer(0, 10));
 	}
 
 	/**
