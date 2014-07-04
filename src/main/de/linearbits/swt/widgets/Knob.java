@@ -737,7 +737,7 @@ public class Knob<T> extends Canvas {
         if (1d / stepping <= 72 && (dX > 5 || dY > 5)) {
 
             // Ticks matching scale
-            for (double v = 0d; v <= 1d - stepping; v += stepping) {
+            for (double v = 0d; v < 1d; v += stepping) {
                 double tick = range.toNearestInternal(v);
                 ticks11.add(getLineCoordinates(iCenterX, iCenterY, iInner + iOuter / 2 + 1, tick));
             }
