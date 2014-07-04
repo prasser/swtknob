@@ -572,7 +572,7 @@ public class Knob<T> extends Canvas {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            /* Ignore*/
         }
         return isRetina;
     }
