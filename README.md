@@ -62,6 +62,10 @@ profile.setTitle("Eingabemaske");
 The string "[type]" will be replaced by the type of range (i.e., integer or decimal) and the string "[range]" 
 will be replaced by "[minimum, maximum]".
 
+Compatibility
+------
+SWTKnob has been tested on all major platforms: MS Windows, Linux and OS X (with and without Retina-Displays)
+
 Example
 ------
 
