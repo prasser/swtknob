@@ -47,6 +47,7 @@ import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -97,7 +98,7 @@ public class Knob<T> extends Canvas {
     /** Pre-rendered focused background */
     private Image                   focusedBackground = null;
     /** Retina factor (OSX fix) */
-    private int                     retinaFactor      = isRetina() ? 2 : 1;
+    private int                     scaleFactor      = isRetina() ? 2 : 1;
     
     /** Dragging */
     private boolean                 drag              = false;
@@ -591,15 +592,15 @@ public class Knob<T> extends Canvas {
 
             // Paint to an image and scale down for better results
         } else {
-            Image image = new Image(getDisplay(), SCALE_DOWN * retinaFactor, SCALE_DOWN * retinaFactor);
+            Image image = new Image(getDisplay(), SCALE_DOWN * scaleFactor, SCALE_DOWN * scaleFactor);
             GC gc2 = new GC(image);
-            paint(gc2, new Point(SCALE_DOWN * retinaFactor, SCALE_DOWN * retinaFactor));
+            paint(gc2, new Point(SCALE_DOWN * scaleFactor, SCALE_DOWN * scaleFactor));
             gc2.dispose();
 
             int size = Math.min(gcsize.x, gcsize.y);
             gc.setAdvanced(true);
             gc.setAntialias(SWT.ON);
-            gc.drawImage(image, 0, 0, SCALE_DOWN * retinaFactor, SCALE_DOWN * retinaFactor, 0, 0, size, size);
+            gc.drawImage(image, 0, 0, SCALE_DOWN * scaleFactor, SCALE_DOWN * scaleFactor, 0, 0, size, size);
         }
     }
 
@@ -615,22 +616,29 @@ public class Knob<T> extends Canvas {
         if (this.isFocusControl()) profile = this.focusedProfile;
 
         // Determine size
-        double min = (double) Math.min(gcsize.x, gcsize.y);
+        double min = (double) Math.min(gcsize.x, gcsize.y) * scaleFactor;
         int imageSize = (int) Math.round(min);
         if (defaultBackground == null || defaultBackground.isDisposed()) {
-            defaultBackground = paintBackground(imageSize * retinaFactor, imageSize * retinaFactor, this.defaultProfile);
+            defaultBackground = paintBackground(imageSize, imageSize, this.defaultProfile);
         }
         if (focusedBackground == null || focusedBackground.isDisposed()) {
-            focusedBackground = paintBackground(imageSize * retinaFactor, imageSize * retinaFactor, this.focusedProfile);
+            focusedBackground = paintBackground(imageSize, imageSize, this.focusedProfile);
         }
 
         // Activate anti-aliasing
         gc.setAdvanced(true);
         gc.setAntialias(SWT.ON);
+        
+        // Scale to adjust for retina displays
+        if (scaleFactor != 1) {
+        	Transform transform = new Transform(getDisplay());
+        	transform.scale(1f/(float)scaleFactor, 1f/(float)scaleFactor);
+            gc.setTransform(transform);        	
+        }
 
         // Draw background
         Image background = this.isFocusControl() ? focusedBackground : defaultBackground;
-        gc.drawImage(background, 0, 0, imageSize * retinaFactor, imageSize * retinaFactor, 0, 0, imageSize, imageSize);
+        gc.drawImage(background, 0, 0, imageSize, imageSize, 0, 0, imageSize, imageSize);
 
         // Compute parameters
         double tick = min * 0.3d;
