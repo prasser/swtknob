@@ -64,7 +64,15 @@ class KnobInputDialog<T> extends Dialog {
         } else {
             message = message.replace("[type]", language.getDecimal());
         }
-        message = message.replace("[range]", "[" + scale.getMinimum() + ", " + scale.getMaximum() + "]");
+        T min = scale.getMinimum();
+        T max = scale.getMaximum();
+        String sMin = !(min instanceof Character) ? 
+        		       String.valueOf(min) : 
+        		       String.valueOf((int)((Character)min).charValue()); 
+        String sMax = !(max instanceof Character) ? 
+        		       String.valueOf(max) : 
+        		       String.valueOf((int)((Character)max).charValue());
+        message = message.replace("[range]", "[" + sMin + ", " + sMax + "]");
         this.message = message;
         this.scale = scale;
         this.value = value;
@@ -107,7 +115,10 @@ class KnobInputDialog<T> extends Dialog {
         data = new GridData(GridData.FILL_HORIZONTAL);
         data.horizontalSpan = 2;
         text.setLayoutData(data);
-        text.setText(String.valueOf(value));
+        String sValue = !(value instanceof Character) ? 
+        		         String.valueOf(value) : 
+        		         String.valueOf((int)((Character)value).charValue());
+        text.setText(sValue);
 
         final Button ok = new Button(shell, SWT.PUSH);
         ok.setText("OK");
