@@ -17,6 +17,9 @@
  */
 package de.linearbits.swt.widgets;
 
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -93,7 +96,9 @@ public class Knob<T> extends Canvas {
     private Image                   defaultBackground = null;
     /** Pre-rendered focused background */
     private Image                   focusedBackground = null;
-
+    /** Retina factor (OSX fix) */
+    private int                     retinaFactor      = isRetina() ? 2 : 1;
+    
     /** Dragging */
     private boolean                 drag              = false;
     /** Dragging */
@@ -544,6 +549,32 @@ public class Knob<T> extends Canvas {
         double y = r * Math.cos(-value * 2d * Math.PI);
         return new Point((int) Math.round(x + centerX), (int) Math.round(y + centerY));
     }
+    
+    /**
+     * Returns whether this is a retina device. 
+     * http://lubosplavucha.com/java/2013/09/02/retina-support-in-java-for-awt-swing/
+     * @return
+     */
+    private static boolean isRetina() {
+    	 
+        boolean isRetina = false;
+        GraphicsDevice graphicsDevice = GraphicsEnvironment.
+        								getLocalGraphicsEnvironment().
+        								getDefaultScreenDevice();
+        try {
+            Field field = graphicsDevice.getClass().getDeclaredField("scale");
+            if (field != null) {
+                field.setAccessible(true);
+                Object scale = field.get(graphicsDevice);
+                if(scale instanceof Integer && ((Integer) scale).intValue() == 2) {
+                    isRetina = true;
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return isRetina;
+    }
 
     /**
      * Paint routine
@@ -560,15 +591,15 @@ public class Knob<T> extends Canvas {
 
             // Paint to an image and scale down for better results
         } else {
-            Image image = new Image(getDisplay(), SCALE_DOWN, SCALE_DOWN);
+            Image image = new Image(getDisplay(), SCALE_DOWN * retinaFactor, SCALE_DOWN * retinaFactor);
             GC gc2 = new GC(image);
-            paint(gc2, new Point(SCALE_DOWN, SCALE_DOWN));
+            paint(gc2, new Point(SCALE_DOWN * retinaFactor, SCALE_DOWN * retinaFactor));
             gc2.dispose();
 
             int size = Math.min(gcsize.x, gcsize.y);
             gc.setAdvanced(true);
             gc.setAntialias(SWT.ON);
-            gc.drawImage(image, 0, 0, SCALE_DOWN, SCALE_DOWN, 0, 0, size, size);
+            gc.drawImage(image, 0, 0, SCALE_DOWN * retinaFactor, SCALE_DOWN * retinaFactor, 0, 0, size, size);
         }
     }
 
@@ -587,10 +618,10 @@ public class Knob<T> extends Canvas {
         double min = (double) Math.min(gcsize.x, gcsize.y);
         int imageSize = (int) Math.round(min);
         if (defaultBackground == null || defaultBackground.isDisposed()) {
-            defaultBackground = paintBackground(imageSize, imageSize, this.defaultProfile);
+            defaultBackground = paintBackground(imageSize * retinaFactor, imageSize * retinaFactor, this.defaultProfile);
         }
         if (focusedBackground == null || focusedBackground.isDisposed()) {
-            focusedBackground = paintBackground(imageSize, imageSize, this.focusedProfile);
+            focusedBackground = paintBackground(imageSize * retinaFactor, imageSize * retinaFactor, this.focusedProfile);
         }
 
         // Activate anti-aliasing
@@ -599,7 +630,7 @@ public class Knob<T> extends Canvas {
 
         // Draw background
         Image background = this.isFocusControl() ? focusedBackground : defaultBackground;
-        gc.drawImage(background, 0, 0, imageSize, imageSize, 0, 0, imageSize, imageSize);
+        gc.drawImage(background, 0, 0, imageSize * retinaFactor, imageSize * retinaFactor, 0, 0, imageSize, imageSize);
 
         // Compute parameters
         double tick = min * 0.3d;
