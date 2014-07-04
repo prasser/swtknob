@@ -556,7 +556,7 @@ public class Knob<T> extends Canvas {
      * http://lubosplavucha.com/java/2013/09/02/retina-support-in-java-for-awt-swing/
      * @return
      */
-    private static boolean isRetina() {
+    private boolean isRetina() {
     	 
         boolean isRetina = false;
         GraphicsDevice graphicsDevice = GraphicsEnvironment.
