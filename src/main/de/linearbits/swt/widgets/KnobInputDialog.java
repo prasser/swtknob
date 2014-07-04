@@ -17,6 +17,8 @@
  */
 package de.linearbits.swt.widgets;
 
+import java.text.NumberFormat;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -37,7 +39,9 @@ import org.eclipse.swt.widgets.Text;
  * @author Fabian Prasser
  */
 class KnobInputDialog<T> extends Dialog {
-    
+
+    /** The formatter*/
+    private NumberFormat formatter;
     /** The message*/
     private String message;
     /** The input text*/
@@ -55,8 +59,13 @@ class KnobInputDialog<T> extends Dialog {
      * @param value
      */
     public KnobInputDialog(Shell parent, KnobDialogProfile language, KnobRange<T> scale, T value) {
+        
         super(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
-        setText(language.getTitle());
+        this.setText(language.getTitle());
+        
+        this.scale = scale;
+        this.value = value;
+        
         String message = language.getMessage();
         if ((scale instanceof KnobRange.Character) || (scale instanceof KnobRange.Long) ||
             (scale instanceof KnobRange.Integer)) {
@@ -64,20 +73,10 @@ class KnobInputDialog<T> extends Dialog {
         } else {
             message = message.replace("[type]", language.getDecimal());
         }
-        T min = scale.getMinimum();
-        T max = scale.getMaximum();
-        String sMin = !(min instanceof Character) ? 
-        		       String.valueOf(min) : 
-        		       String.valueOf((int)((Character)min).charValue()); 
-        String sMax = !(max instanceof Character) ? 
-        		       String.valueOf(max) : 
-        		       String.valueOf((int)((Character)max).charValue());
-        message = message.replace("[range]", "[" + sMin + ", " + sMax + "]");
+        message = message.replace("[range]", "[" + toString(scale.getMinimum()) + ", " + toString(scale.getMaximum()) + "]");
         this.message = message;
-        this.scale = scale;
-        this.value = value;
     }
-
+    
     /**
      * Opens the dialog. Returns null if canceled, the entered value otherwise
      * @return
@@ -95,7 +94,7 @@ class KnobInputDialog<T> extends Dialog {
             }
         }
         if (input == null) return null;
-        else return getValue(input);
+        else return toT(input);
     }
 
     /**
@@ -115,10 +114,7 @@ class KnobInputDialog<T> extends Dialog {
         data = new GridData(GridData.FILL_HORIZONTAL);
         data.horizontalSpan = 2;
         text.setLayoutData(data);
-        String sValue = !(value instanceof Character) ? 
-        		         String.valueOf(value) : 
-        		         String.valueOf((int)((Character)value).charValue());
-        text.setText(sValue);
+        text.setText(toString(value));
 
         final Button ok = new Button(shell, SWT.PUSH);
         ok.setText("OK");
@@ -145,7 +141,7 @@ class KnobInputDialog<T> extends Dialog {
         text.addModifyListener(new ModifyListener() {
             @Override
             public void modifyText(ModifyEvent e) {
-                if (getValue(text.getText()) != null) {
+                if (toT(text.getText()) != null) {
                     ok.setEnabled(true);
                 } else {
                     ok.setEnabled(false);
@@ -156,15 +152,45 @@ class KnobInputDialog<T> extends Dialog {
         shell.setDefaultButton(ok);
     }
 
+    /**
+     * Translates a value to a string
+     * @param value
+     */
+    private String toString(T value) {
+        if (scale instanceof KnobRange.Long){
+            long lvalue = (Long)value;
+            if (formatter == null) return String.valueOf(lvalue);
+            else return formatter.format(lvalue);
+        } else if (scale instanceof KnobRange.Integer){
+            int lvalue = (Integer)value;
+            if (formatter == null) return String.valueOf(lvalue);
+            else return formatter.format(lvalue);
+        } else if (scale instanceof KnobRange.Character){
+            int lvalue = (int)((Character)value).charValue();
+            if (formatter == null) return String.valueOf(lvalue);
+            else return formatter.format(lvalue);
+        } else if (scale instanceof KnobRange.Float){
+            float lvalue =(Float)value;
+            if (formatter == null) return String.valueOf(lvalue);
+            else return formatter.format(lvalue);
+        } else if (scale instanceof KnobRange.Double){
+            double lvalue =(Double)value;
+            if (formatter == null) return String.valueOf(lvalue);
+            else return formatter.format(lvalue);
+        }  else {
+            throw new IllegalStateException("Unknown type of scale: "+scale);
+        }
+    }
+
     @SuppressWarnings("unchecked")
-    private T getValue(String input) {
+    private T toT(String input) {
         
         try {
             if (scale instanceof KnobRange.Long){
                 
                 long min = ((KnobRange.Long)scale).getMinimum();
                 long max = ((KnobRange.Long)scale).getMaximum();
-                long value = Long.valueOf(input);
+                long value = formatter == null ? Long.valueOf(input) : formatter.parse(input).longValue();
                 if (value < min || value > max) return null;
                 else return (T)Long.valueOf(value);
                 
@@ -172,7 +198,7 @@ class KnobInputDialog<T> extends Dialog {
                 
                 int min = ((KnobRange.Integer)scale).getMinimum();
                 int max = ((KnobRange.Integer)scale).getMaximum();
-                int value = Integer.valueOf(input);
+                int value = formatter == null ? Integer.valueOf(input) : formatter.parse(input).intValue();
                 if (value < min || value > max) return null;
                 else return (T)Integer.valueOf(value);
                 
@@ -180,7 +206,7 @@ class KnobInputDialog<T> extends Dialog {
                 
                 char min = ((KnobRange.Character)scale).getMinimum();
                 char max = ((KnobRange.Character)scale).getMaximum();
-                char value = (char)Integer.valueOf(input).intValue();
+                char value = formatter == null ? (char)Integer.valueOf(input).intValue() : (char)formatter.parse(input).intValue();
                 if (value < min || value > max) return null;
                 else return (T)Character.valueOf(value);
                 
@@ -188,7 +214,7 @@ class KnobInputDialog<T> extends Dialog {
                 
                 float min = ((KnobRange.Float)scale).getMinimum();
                 float max = ((KnobRange.Float)scale).getMaximum();
-                float value = Float.valueOf(input);
+                float value = formatter == null ? Float.valueOf(input) : formatter.parse(input).floatValue();
                 if (value < min || value > max) return null;
                 else return (T)Float.valueOf(value);
                 
@@ -196,7 +222,7 @@ class KnobInputDialog<T> extends Dialog {
                 
                 double min = ((KnobRange.Double)scale).getMinimum();
                 double max = ((KnobRange.Double)scale).getMaximum();
-                double value = Double.valueOf(input);
+                double value = formatter == null ? Double.valueOf(input) : formatter.parse(input).doubleValue();
                 if (value < min || value > max) return null;
                 else return (T)Double.valueOf(value);
             } 

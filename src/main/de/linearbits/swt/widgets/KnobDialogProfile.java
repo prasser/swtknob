@@ -17,6 +17,8 @@
  */
 package de.linearbits.swt.widgets;
 
+import java.text.NumberFormat;
+
 /**
  * A language profile for the input dialog.
  * 
@@ -43,16 +45,17 @@ public class KnobDialogProfile {
         profile.setTitle("Eingabemaske");
         return profile;
     }
+
     /** Message*/
     private String message = "Please enter [type] in range [range]:";
     /** Title*/
     private String title = "Input Dialog";
-    
     /** Integer*/
     private String integer = "an integer";
-
     /** Decimal*/
     private String decimal = "a decimal";
+    /** Formatter*/
+    private NumberFormat formatter = null;
 
     /**
      * Checks the settings
@@ -74,6 +77,14 @@ public class KnobDialogProfile {
     }
 
     /**
+     * Returns the current formatter
+     * @return
+     */
+    public NumberFormat getFormatter() {
+        return formatter;
+    }
+    
+    /**
      * Returns the text for the integer datatype. Default is: "integer"
      * @return
      */
@@ -92,7 +103,6 @@ public class KnobDialogProfile {
         return message;
     }
 
-
     /**
      * Returns the title of the dialog
      * @return
@@ -101,23 +111,34 @@ public class KnobDialogProfile {
         return title;
     }
 
-
     /**
      * Sets the text for the decimal datatype. Default is: "decimal"
      * @return
      */
-    public void setDecimal(String value) {
+    public KnobDialogProfile setDecimal(String value) {
         checkNull(value);
         this.decimal = value;
+        return this;
+    }
+
+    /**
+     * Sets the formatter used for input/output
+     * @return
+     */
+    public KnobDialogProfile setFormatter(NumberFormat formatter) {
+        checkNull(formatter);
+        this.formatter = formatter;
+        return this;
     }
 
     /**
      * Sets the text for the integer datatype. Default is: "integer"
      * @return
      */
-    public void setInteger(String value) {
+    public KnobDialogProfile setInteger(String value) {
         checkNull(value);
         this.integer = value;
+        return this;
     }
 
     /**
@@ -126,18 +147,20 @@ public class KnobDialogProfile {
      * Default is:  "Please enter a [type] in range [range]:"
      * @return
      */
-    public void setMessage(String value) {
+    public KnobDialogProfile setMessage(String value) {
         checkNull(value);
         this.message = value;
+        return this;
     }
     
     /**
      * Sets the title of the dialog. Default is: "Input Dialog"
      * @param title
      */
-    public void setTitle(String value) {
+    public KnobDialogProfile setTitle(String value) {
         checkNull(value);
         this.title = value;
+        return this;
     }
 
     /**

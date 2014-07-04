@@ -18,6 +18,8 @@
 
 package de.linearbits.swt.examples;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -29,6 +31,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import de.linearbits.swt.widgets.Knob;
 import de.linearbits.swt.widgets.KnobColorProfile;
+import de.linearbits.swt.widgets.KnobDialogProfile;
 import de.linearbits.swt.widgets.KnobRange;
 
 /**
@@ -50,15 +53,21 @@ public class Example1 {
         shell.setText("SWT");
         shell.setSize(230, 500);
         shell.setLayout(new GridLayout(1, false));
+        
+        // Create profiles
+        KnobColorProfile defaultColorProfile = KnobColorProfile.createDefaultBlueRedProfile();
+        KnobColorProfile focusedColorProfile = KnobColorProfile.createFocusedBlueRedProfile();
+        KnobDialogProfile dialogProfile = KnobDialogProfile.createEnglishProfile().setFormatter(new DecimalFormat("0.00000"));
 
         // Create Knob
-        Knob<Double> knob = new Knob<Double>(shell, SWT.NULL, new KnobRange.Double());
+        final Knob<Double> knob = new Knob<Double>(shell, SWT.NULL, new KnobRange.Double(0d, 1d));
         GridData data = new GridData();
         data.heightHint = 200;
         data.widthHint = 200;
         knob.setLayoutData(data);
-        knob.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
+        knob.setDefaultColorProfile(defaultColorProfile);
+        knob.setFocusedColorProfile(focusedColorProfile);
+        knob.setDialogProfile(dialogProfile);
 
         // Create Knob
         final Knob<Integer> knob0 = new Knob<Integer>(shell, SWT.NULL, new KnobRange.Integer(1, 20));
@@ -66,8 +75,9 @@ public class Example1 {
         data0.heightHint = 100;
         data0.widthHint = 100;
         knob0.setLayoutData(data0);
-        knob0.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob0.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
+        knob0.setDefaultColorProfile(defaultColorProfile);
+        knob0.setFocusedColorProfile(focusedColorProfile);
+        knob0.setDialogProfile(dialogProfile);
 
         // Create Knob
         final Knob<Long> knob1 = new Knob<Long>(shell, SWT.NULL, new KnobRange.Long(1l, 20l));
@@ -75,8 +85,9 @@ public class Example1 {
         data1.heightHint = 50;
         data1.widthHint = 50;
         knob1.setLayoutData(data1);
-        knob1.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob1.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
+        knob1.setDefaultColorProfile(defaultColorProfile);
+        knob1.setFocusedColorProfile(focusedColorProfile);
+        knob1.setDialogProfile(dialogProfile);
 
         // Create Knob
         Knob<Character> knob2 = new Knob<Character>(shell, SWT.NULL, new KnobRange.Character());
@@ -84,26 +95,29 @@ public class Example1 {
         data2.heightHint = 30;
         data2.widthHint = 30;
         knob2.setLayoutData(data2);
-        knob2.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob2.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
+        knob2.setDefaultColorProfile(defaultColorProfile);
+        knob2.setFocusedColorProfile(focusedColorProfile);
+        knob2.setDialogProfile(dialogProfile);
 
         // Create Knob
-        Knob<Float> knob3 = new Knob<Float>(shell, SWT.NULL, new KnobRange.Float());
+        Knob<Float> knob3 = new Knob<Float>(shell, SWT.NULL, new KnobRange.Float(0f, 1f));
         GridData data3 = new GridData();
         data3.heightHint = 23;
         data3.widthHint = 23;
         knob3.setLayoutData(data3);
-        knob3.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob3.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
+        knob3.setDefaultColorProfile(defaultColorProfile);
+        knob3.setFocusedColorProfile(focusedColorProfile);
+        knob3.setDialogProfile(dialogProfile);
 
         // Create Knob
-        Knob<Integer> knob4 = new Knob<Integer>(shell, SWT.NULL, new KnobRange.Integer());
+        Knob<Integer> knob4 = new Knob<Integer>(shell, SWT.NULL, new KnobRange.Integer(0, 9999));
         GridData data4 = new GridData();
         data4.heightHint = 10;
         data4.widthHint = 10;
         knob4.setLayoutData(data4);
-        knob4.setDefaultColorProfile(KnobColorProfile.createDefaultBlueRedProfile());
-        knob4.setFocusedColorProfile(KnobColorProfile.createFocusedBlueRedProfile());
+        knob4.setDefaultColorProfile(defaultColorProfile);
+        knob4.setFocusedColorProfile(focusedColorProfile);
+        knob4.setDialogProfile(dialogProfile);
 
         // Bind knob0 with knob1
         knob1.addSelectionListener(new SelectionAdapter(){
@@ -129,5 +143,9 @@ public class Example1 {
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) display.sleep();
         }
+        
+        // Dispose profiles
+        defaultColorProfile.dispose();
+        focusedColorProfile.dispose();
     }
 }

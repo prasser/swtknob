@@ -386,140 +386,154 @@ public class KnobColorProfile {
      * Sets a color
      * @param color
      */
-    public void setBackground(Color color) {
+    public KnobColorProfile setBackground(Color color) {
         checkDisposed();
         checkNull(color);
         this.background = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setBorder(Color color) {
+    public KnobColorProfile setBorder(Color color) {
         checkDisposed();
         checkNull(color);
         this.border = color;
+        return this;
     }
 
     /**
      * Sets a color
      * @param color
      */
-    public void setEdgeFrom(Color color) {
+    public KnobColorProfile setEdgeFrom(Color color) {
         checkDisposed();
         checkNull(color);
         this.edgeFrom = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setEdgeTo(Color color) {
+    public KnobColorProfile setEdgeTo(Color color) {
         checkDisposed();
         checkNull(color);
         this.edgeTo = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setHighlightBottom(Color color) {
+    public KnobColorProfile setHighlightBottom(Color color) {
         checkDisposed();
         checkNull(color);
         this.highlightBottom = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setHighlightInnerFrom(Color color) {
+    public KnobColorProfile setHighlightInnerFrom(Color color) {
         checkDisposed();
         checkNull(color);
         this.highlightInnerFrom = color;
+        return this;
     }
 
     /**
      * Sets a color
      * @param color
      */
-    public void setHighlightInnerTo(Color color) {
+    public KnobColorProfile setHighlightInnerTo(Color color) {
         checkDisposed();
         checkNull(color);
         this.highlightInnerTo = color;
+        return this;
     }
 
     /**
      * Sets a color
      * @param color
      */
-    public void setHighlightSpecular(Color color) {
+    public KnobColorProfile setHighlightSpecular(Color color) {
         checkDisposed();
         checkNull(color);
         this.highlightSpecular = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setIndicatorInner(Color color) {
+    public KnobColorProfile setIndicatorInner(Color color) {
         checkDisposed();
         checkNull(color);
         this.indicatorInner = color;
+        return this;
     }
 
     /**
      * Sets a color
      * @param color
      */
-    public void setIndicatorOuter(Color color) {
+    public KnobColorProfile setIndicatorOuter(Color color) {
         checkDisposed();
         checkNull(color);
         this.indicatorOuter = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setPlateauInner(Color color) {
+    public KnobColorProfile setPlateauInner(Color color) {
         checkDisposed();
         checkNull(color);
         this.plateauInner = color;
+        return this;
     }
 
     /**
      * Sets a color
      * @param color
      */
-    public void setPlateauOuter(Color color) {
+    public KnobColorProfile setPlateauOuter(Color color) {
         checkDisposed();
         checkNull(color);
         this.plateauOuter = color;
+        return this;
     }
     
     /**
      * Sets a color
      * @param color
      */
-    public void setShadow(Color color) {
+    public KnobColorProfile setShadow(Color color) {
         checkDisposed();
         checkNull(color);
         this.shadow = color;
+        return this;
     }
 
     /**
      * Sets a color
      * @param color
      */
-    public void setTick(Color color) {
+    public KnobColorProfile setTick(Color color) {
         checkDisposed();
         checkNull(color);
         this.tick = color;
+        return this;
     }
     
     /**
