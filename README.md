@@ -102,4 +102,4 @@ The according Javadoc is available for download [here](https://rawgithub.com/pra
 
 Documentation
 ------
-Javadoc documentation can be found [here](https://rawgithub.com/prasser/swtknob/master/doc/index.html). 
+Online documentation can be found [here](https://rawgithub.com/prasser/swtknob/master/doc/index.html). 
