@@ -90,13 +90,13 @@ public abstract class KnobRange<T> {
     public static class Double extends KnobRange<java.lang.Double> {
 
         /**
-         * Default constructor. Range is Double.MIN_VALUE - Double.MAX_VALUE
+         * Default constructor. Range is -Double.MAX_VALUE - Double.MAX_VALUE
          * 
          * @param minimum
          * @param maximum
          */
         public Double() {
-            this(java.lang.Double.MIN_VALUE, java.lang.Double.MAX_VALUE);
+            this(-java.lang.Double.MAX_VALUE, java.lang.Double.MAX_VALUE);
         }
 
         /**
