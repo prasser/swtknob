@@ -379,6 +379,7 @@ public class Knob<T> extends Canvas {
                 T result = dialog.open();
                 if (result != null) {
                     value = range.toInternal(result);
+                    fireSelectionEvent();
                     redraw();
                 }
             }
