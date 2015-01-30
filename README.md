@@ -103,3 +103,7 @@ The according Javadoc is available for download [here](https://rawgithub.com/pra
 Documentation
 ------
 Online documentation can be found [here](https://rawgithub.com/prasser/swtknob/master/doc/index.html). 
+
+License
+------
+EPL 1.0
