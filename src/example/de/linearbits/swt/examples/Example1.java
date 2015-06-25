@@ -33,15 +33,27 @@ import de.linearbits.swt.widgets.KnobRange;
  * @author Fabian Prasser
  */
 public class Example1 {
-    
+
     /**
      * Main entry point
      * @param args
      */
     public static void main(String[] args) {
+        main(null, args);
+    }
+
+    /**
+     * Main entry point
+     * @param display
+     * @param args
+     */
+    public static void main(Display display, String[] args) {
 
         // Create display and shell
-        Display display = new Display();
+        boolean dispose = display != null;
+        if (!dispose) {
+            display = new Display();            
+        } 
         Shell shell = new Shell(display);
         shell.setText("SWT");
         shell.setSize(230, 500);
@@ -131,6 +143,10 @@ public class Example1 {
 
         // Open
         shell.open();
+        
+        if (dispose) {
+            shell.dispose();
+        }
 
         // Event loop
         while (!shell.isDisposed()) {
@@ -140,5 +156,9 @@ public class Example1 {
         // Dispose profiles
         defaultColorProfile.dispose();
         focusedColorProfile.dispose();
+    }
+    
+    public static void dispose() {
+        
     }
 }

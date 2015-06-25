@@ -76,24 +76,24 @@ public class Knob<T> extends Canvas {
     /** Design */
     private final Cursor            hiddenCursor      = getHiddenCursor();
 
-    /** Language profile*/
+    /** Language profile */
     private KnobDialogProfile       dialogProfile     = KnobDialogProfile.createEnglishProfile();
 
-    /** Default color profile*/
-    private final KnobColorProfile  standardDefaultProfile;
-    /** Focused color profile*/
-    private final KnobColorProfile  standardFocusedProfile;
-    /** Default color profile*/
+    /** Default color profile */
+    private KnobColorProfile        standardDefaultProfile;
+    /** Focused color profile */
+    private KnobColorProfile        standardFocusedProfile;
+    /** Default color profile */
     private KnobColorProfile        defaultProfile;
-    /** Focused color profile*/
+    /** Focused color profile */
     private KnobColorProfile        focusedProfile;
     /** Pre-rendered default background */
     private Image                   defaultBackground = null;
     /** Pre-rendered focused background */
     private Image                   focusedBackground = null;
     /** Retina factor (OSX fix) */
-    private int                     scaleFactor      = isRetina() ? 2 : 1;
-    
+    private int                     scaleFactor       = isRetina() ? 2 : 1;
+
     /** Dragging */
     private boolean                 drag              = false;
     /** Dragging */
@@ -204,6 +204,10 @@ public class Knob<T> extends Canvas {
     public void setDefaultColorProfile(KnobColorProfile profile) {
         checkWidget();
         profile.check();
+        if (this.standardDefaultProfile != null && !this.standardDefaultProfile.isDisposed()) {
+            this.standardDefaultProfile.dispose();
+            this.standardDefaultProfile = null;
+        }
         this.defaultProfile = profile;
         if (defaultBackground != null) defaultBackground.dispose();
         defaultBackground = null;
@@ -226,6 +230,10 @@ public class Knob<T> extends Canvas {
     public void setFocusedColorProfile(KnobColorProfile profile) {
         checkWidget();
         profile.check();
+        if (this.standardFocusedProfile != null && !this.standardFocusedProfile.isDisposed()) {
+            this.standardFocusedProfile.dispose();
+            this.standardFocusedProfile = null;
+        }
         this.focusedProfile = profile;
         if (focusedBackground != null) focusedBackground.dispose();
         focusedBackground = null;
@@ -286,8 +294,8 @@ public class Knob<T> extends Canvas {
             public void widgetDisposed(DisposeEvent arg0) {
                 if (defaultBackground != null && !defaultBackground.isDisposed()) defaultBackground.dispose();
                 if (focusedBackground != null && !focusedBackground.isDisposed()) focusedBackground.dispose();
-                if (!standardDefaultProfile.isDisposed()) standardDefaultProfile.dispose();
-                if (!standardFocusedProfile.isDisposed()) standardFocusedProfile.dispose();
+                if (standardDefaultProfile != null && !standardDefaultProfile.isDisposed()) standardDefaultProfile.dispose();
+                if (standardFocusedProfile != null && !standardFocusedProfile.isDisposed()) standardFocusedProfile.dispose();
             }
         };
     }
@@ -525,8 +533,16 @@ public class Knob<T> extends Canvas {
         PaletteData palette = new PaletteData(new RGB[] { white.getRGB(), black.getRGB() });
         ImageData sourceData = new ImageData(16, 16, 1, palette);
         sourceData.transparentPixel = 0;
-        return new Cursor(display, sourceData, 0, 0);
-
+        final Cursor cursor = new Cursor(display, sourceData, 0, 0);
+        this.addDisposeListener(new DisposeListener(){
+            @Override
+            public void widgetDisposed(DisposeEvent arg0) {
+                if (cursor != null && !cursor.isDisposed()) {
+                    cursor.dispose();
+                }
+            }
+        });
+        return cursor;
     }
 
     /**
@@ -596,6 +612,7 @@ public class Knob<T> extends Canvas {
             gc.setAdvanced(true);
             gc.setAntialias(SWT.ON);
             gc.drawImage(image, 0, 0, SCALE_DOWN * scaleFactor, SCALE_DOWN * scaleFactor, 0, 0, size, size);
+            image.dispose();
         }
     }
 
