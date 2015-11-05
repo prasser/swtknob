@@ -18,6 +18,8 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -81,6 +83,7 @@ class KnobInputDialog<T> extends Dialog {
         createContents(shell);
         shell.pack();
         shell.open();
+        center(shell, getParent());
         Display display = getParent().getDisplay();
         while (!shell.isDisposed()) {
             if (!display.readAndDispatch()) {
@@ -89,6 +92,21 @@ class KnobInputDialog<T> extends Dialog {
         }
         if (input == null) return null;
         else return toT(input);
+    }
+
+    /**
+     * Centers the given shell.
+     *
+     * @param shell
+     * @param parent
+     */
+    private void center(final Shell shell, final Shell parent) {
+
+        final Rectangle bounds = parent.getBounds();
+        final Point p = shell.getSize();
+        final int left = (bounds.width - p.x) / 2;
+        final int top = (bounds.height - p.y) / 2;
+        shell.setBounds(left + bounds.x, top + bounds.y, p.x, p.y);
     }
 
     /**
