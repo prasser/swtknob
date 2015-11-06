@@ -18,7 +18,7 @@ package de.linearbits.swt.widgets;
  * @param <T>
  */
 public abstract class KnobRange<T> {
-
+    
     /**
      * A char range
      * 
@@ -76,6 +76,7 @@ public abstract class KnobRange<T> {
             return ((double)extValue - (double)minimum) / ((double)maximum - (double)minimum);
         }
     }
+
     /**
      * A double range
      * 
@@ -187,7 +188,6 @@ public abstract class KnobRange<T> {
             return value;
         }
     }
-
     /**
      * An integer range
      * 
@@ -275,6 +275,7 @@ public abstract class KnobRange<T> {
             }
         }
 
+
         @Override
         protected double getStepping() {
             return toInternal(minimum + 1l) - toInternal(minimum);
@@ -302,6 +303,12 @@ public abstract class KnobRange<T> {
             return ((double)extValue - (double)minimum) / ((double)maximum - (double)minimum);
         }
     }
+
+    /** Minimum sensitivity*/
+    private static final double MIN_SENSITIVITY = 1000d;
+
+    /** Maximum sensitivity*/
+    private static final double MAX_SENSITIVITY = 10000d;
 
     /** The minimum*/
     protected final T minimum;
@@ -333,6 +340,17 @@ public abstract class KnobRange<T> {
      */
     public T getMinimum() {
         return minimum;
+    }
+
+    /**
+     * Returns the sensitivity
+     * @return
+     */
+    public double getSensitivity() {
+        double result = (double)(toInternal(maximum) - toInternal(minimum));
+        result = result < MIN_SENSITIVITY ? MIN_SENSITIVITY : result;
+        result = result > MAX_SENSITIVITY ? MAX_SENSITIVITY : result;
+        return result;
     }
 
     /**

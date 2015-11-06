@@ -107,7 +107,7 @@ public class Knob<T> extends Canvas {
     /** Dragging */
     private double                  dragValue         = 0;
     /** Dragging */
-    private double                  sensitivity       = 200d;
+    private double                  sensitivity       = 0d;
 
     /** Value handling */
     private double                  value             = 0d;
@@ -122,19 +122,20 @@ public class Knob<T> extends Canvas {
      * 
      * @param parent
      * @param style
-     * @param scale
+     * @param range
      */
-    public Knob(Composite parent, int style, KnobRange<T> scale) {
+    public Knob(Composite parent, int style, KnobRange<T> range) {
 
         super(parent, checkStyle(style) | SWT.DOUBLE_BUFFERED);
 
         // Init
-        this.range = scale;
+        this.range = range;
         this.setBackground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND));
         this.standardDefaultProfile = KnobColorProfile.createDefaultSystemProfile(parent.getDisplay());
         this.standardFocusedProfile = KnobColorProfile.createFocusedSystemProfile(parent.getDisplay());
         this.defaultProfile = standardDefaultProfile;
         this.focusedProfile = standardFocusedProfile;
+        this.sensitivity = range.getSensitivity();
 
         // Add listeners
         this.addDisposeListener(createDiposeHandler());
@@ -249,6 +250,7 @@ public class Knob<T> extends Canvas {
         checkWidget();
         this.range = range;
         this.value = 0d;
+        this.sensitivity = range.getSensitivity();
         if (defaultBackground != null) defaultBackground.dispose();
         if (focusedBackground != null) focusedBackground.dispose();
         defaultBackground = null;
