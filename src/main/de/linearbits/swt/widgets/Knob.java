@@ -276,12 +276,24 @@ public class Knob<T> extends Canvas {
      * @param value
      */
     public void setValue(T value) {
+        setValue(value, true);
+    }
+
+    /**
+     * Sets the value
+     * 
+     * @param value
+     * @param fireSelectionEvent
+     */
+    public void setValue(T value, boolean fireSelectionEvent) {
         checkWidget();
         double val = this.range.toInternal(value);
         if (val != this.value) {
             this.value = val;
             this.redraw();
-            this.fireSelectionEvent();
+            if (fireSelectionEvent) {
+                this.fireSelectionEvent();
+            }
         }
     }
 
