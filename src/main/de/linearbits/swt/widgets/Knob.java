@@ -13,7 +13,7 @@ package de.linearbits.swt.widgets;
 
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
-import java.lang.reflect.Field;
+import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -582,24 +582,12 @@ public class Knob<T> extends Canvas {
      * @return
      */
     private boolean isRetina() {
-    	 
-        boolean isRetina = false;
+    	
         GraphicsDevice graphicsDevice = GraphicsEnvironment.
         								getLocalGraphicsEnvironment().
         								getDefaultScreenDevice();
-        try {
-            Field field = graphicsDevice.getClass().getDeclaredField("scale");
-            if (field != null) {
-                field.setAccessible(true);
-                Object scale = field.get(graphicsDevice);
-                if(scale instanceof Integer && ((Integer) scale).intValue() == 2) {
-                    isRetina = true;
-                }
-            }
-        } catch (Exception e) {
-            /* Ignore*/
-        }
-        return isRetina;
+        AffineTransform tx = graphicsDevice.getDefaultConfiguration().getDefaultTransform();
+        return Math.round(tx.getScaleX()) == 2;
     }
 
     /**
