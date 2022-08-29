@@ -127,6 +127,8 @@ class KnobInputDialog<T> extends Dialog {
         data.horizontalSpan = 2;
         text.setLayoutData(data);
         text.setText(toString(value));
+        text.setSelection(text.getText().length());
+        text.selectAll();
 
         final Button ok = new Button(shell, SWT.PUSH);
         ok.setText("OK");
